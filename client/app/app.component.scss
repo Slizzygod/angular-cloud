@@ -1,0 +1,50 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// https://material.angular.io/guide/theming#reading-hues-from-palettes
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.hero {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.navigation-list {
+  padding-bottom: 1em;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1em;
+
+  img {
+    border-radius: 50%;
+    padding: 2px;
+    background: #fff;
+  }
+}
+
+:host mat-nav-list {
+  height: 92%
+}
+
+:host ::ng-deep .mat-drawer-inner-container {
+  overflow: hidden;
+}
+
+:host mat-drawer {
+  background: mat.get-color-from-palette($my-palette, 500);
+}
+
+:host mat-icon  {
+  color: #fff;
+}

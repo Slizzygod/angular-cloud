@@ -1,0 +1,103 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:rxjs/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "semi": [
+      "error",
+      "always"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "@typescript-eslint/no-empty-function": 1,
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-inferrable-types": [
+      "warn",
+      {
+        "ignoreParameters": true
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": "warn",
+    "prefer-const": "warn",
+    "no-trailing-spaces": "warn",
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
+    "object-shorthand": "error",
+    "spaced-comment": 1,
+    "guard-for-in": "warn",
+    "prefer-object-spread": "error",
+    "eqeqeq": [
+      "warn",
+      "always"
+    ],
+    "@typescript-eslint/no-shadow": "warn",
+    "no-shadow": [
+      "off",
+      {
+        "builtinGlobals": true
+      }
+    ],
+    "no-throw-literal": "error",
+    "semi-style": [
+      "error",
+      "last"
+    ],
+    "semi-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "no-whitespace-before-property": "error",
+    "curly": "error",
+    "brace-style": 1,
+    "nonblock-statement-body-position": [
+      "error",
+      "below"
+    ],
+    "template-curly-spacing": [
+      "error",
+      "never"
+    ],
+    "key-spacing": [
+      "error",
+      {
+        "mode": "strict"
+      }
+    ],
+    "no-else-return": "warn",
+    "max-len": [
+      "warn",
+      {
+        "code": 140
+      }
+    ],
+    "func-call-spacing": [
+      "warn",
+      "never"
+    ],
+    "eol-last": [
+      "warn",
+      "always"
+    ],
+    "rxjs/no-implicit-any-catch": [
+      "error",
+      {
+        "allowExplicitAny": true
+      }
+    ]
+  }
+}

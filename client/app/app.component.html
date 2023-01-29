@@ -1,0 +1,28 @@
+<mat-drawer-container class="hero">
+  <mat-drawer mode="side" opened class="side-content" *ngIf="isAuthenticated$ | async">
+    <mat-nav-list>
+      <div class="profile">
+        <img width="40px" src="../assets/no-image.png" />
+      </div>
+      <div class="content-list">
+        <div class="navigation-list" *ngFor="let subItem of navigationSideMenu">
+          <ng-container *ngFor="let item of subItem.items">
+            <a
+              mat-list-item
+              [routerLink]="[item.link]"
+              routerLinkActive="active"
+            >
+              <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </mat-nav-list>
+  </mat-drawer>
+
+  <mat-drawer-content class="main-content">
+    <div class="content">
+      <router-outlet #o="outlet"></router-outlet>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
