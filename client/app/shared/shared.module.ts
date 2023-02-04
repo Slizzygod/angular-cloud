@@ -23,6 +23,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   imports: [
@@ -50,7 +51,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatAutocompleteModule,
     MatDialogModule,
     MatTreeModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatTableModule
   ],
   declarations: [],
   exports: [
@@ -78,8 +80,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatAutocompleteModule,
     MatDialogModule,
     MatTreeModule,
-    MatBadgeModule
-
+    MatBadgeModule,
+    MatTableModule
   ]
 })
 

@@ -37,6 +37,14 @@ export class UsersComponent implements OnInit {
     this.groups = groups;
   }
 
+  onUpdatedUser(user: User): void {
+    const needlyUserIndex = this.users.findIndex(el => user.id === user.id);
+
+    if (needlyUserIndex !== -1) {
+      this.users[needlyUserIndex] = { ...this.users[needlyUserIndex], ...user };
+    }
+  }
+
   onError(error: unknown): void {
     console.error(error);
   }

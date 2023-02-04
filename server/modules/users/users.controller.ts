@@ -101,6 +101,63 @@ export class UsersCtrl {
     }
   }
 
+  async updateUser(req: Request, res: Response): Promise<any> {
+    const id = req.params['id'];
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const patronymicName = req.body.patronymicName;
+
+    try {
+      const user = await User.findOne({ where: { id } });
+
+      if (!user) {
+        res.status(404).send('User not found');
+      }
+
+      await user.update({ firstName, lastName, patronymicName });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async blockUser(req: Request, res: Response): Promise<any> {
+    const id = req.params['id'];
+
+    try {
+      const user = await User.findOne({ where: { id } });
+
+      if (!user) {
+        res.status(404).send('User not found');
+      }
+
+      await user.update({ blocked: true });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async unlockUser(req: Request, res: Response): Promise<any> {
+    const id = req.params['id'];
+
+    try {
+      const user = await User.findOne({ where: { id } });
+
+      if (!user) {
+        res.status(404).send('User not found');
+      }
+
+      await user.update({ blocked: false });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
 }
 
 export const usersCtrl = new UsersCtrl();

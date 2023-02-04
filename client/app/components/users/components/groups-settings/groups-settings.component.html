@@ -3,7 +3,7 @@
     <div class="groups">
       <mat-card>
         <mat-card-header>
-          <mat-card-title>Список групп ({{ groups.length }})</mat-card-title>
+          <mat-card-title>Группы ({{ groups.length }})</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="card-content">
@@ -12,9 +12,9 @@
                 *ngFor="let group of groups"
                 class="list-item pointer"
                 (click)="onClickGroup(group)"
-                [class.list-item-selected]="group === selectedGroup"
+                [class.list-item-selected]="selectedGroup && group.id === selectedGroup.id"
               >
-                <span matTooltip="{{ group.name }}">
+                <span>
                   {{ group.name }}
                   <span class="users-count">({{ group.users.length }})</span>
                 </span>
@@ -24,6 +24,7 @@
         </mat-card-content>
         <mat-card-actions>
           <button
+            matTooltip="Создать группу"
             mat-icon-button
             color="primary"
             (click)="onClickCreateGroup()"
@@ -31,6 +32,7 @@
             <mat-icon>add</mat-icon>
           </button>
           <button
+            matTooltip="Удалить группу"
             mat-icon-button
             color="primary"
             (click)="onClickDeleteGroup()"
@@ -119,7 +121,12 @@
                                 {{ user.firstName }})</span
                               >
                             </div>
-                            <mat-checkbox (change)="onChangeUserState($event, user.id)" [checked]="user['state']" class="example-margin"></mat-checkbox>
+                            <mat-checkbox
+                              color="primary"
+                              (change)="onChangeUserState($event, user.id)"
+                              [checked]="user['state']"
+                              class="example-margin"
+                            ></mat-checkbox>
                           </div>
                         </mat-list-item>
                       </mat-list>

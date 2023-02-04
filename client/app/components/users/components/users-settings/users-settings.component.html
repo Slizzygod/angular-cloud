@@ -1,3 +1,97 @@
 <div class="wrapper">
+  <div class="content">
+    <div class="users">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Пользователи ({{ users.length }})</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-content">
+            <mat-list>
+              <mat-list-item
+                *ngFor="let user of users"
+                class="list-item pointer"
+                (click)="onClickUser(user)"
+                [class.list-item-selected]="selectedUser && user.id === selectedUser.id"
+                [class.blocked]="user.blocked"
+              >
+                {{ user.username }}
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            [matTooltip]="selectedUser.blocked ? 'Разблокировать' : 'Заблокировать'"
+            mat-icon-button
+            color="primary"
+            (click)="onClickBlockButton()"
+            *ngIf="selectedUser"
+          >
+            <mat-icon *ngIf="selectedUser.blocked">lock_open</mat-icon>
+            <mat-icon *ngIf="!selectedUser.blocked">lock</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
 
+    <div class="selected-user" *ngIf="selectedUser">
+      <div class="selected-user-header">
+        <div class="selected-user-title">
+          <h3>{{ selectedUser.username }}</h3>
+        </div>
+        <div class="selected-user-control"></div>
+      </div>
+
+      <div class="selected-user-edit-container">
+        <form [formGroup]="form">
+          <div class="selected-user-form-container">
+            <div class="selected-user-field-user-main">
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-user-field"
+                  appearance="outline"
+                >
+                  <mat-label>Имя</mat-label>
+                  <input matInput formControlName="firstName" />
+                </mat-form-field>
+              </div>
+
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-user-field"
+                  appearance="outline"
+                >
+                  <mat-label>Фамилия</mat-label>
+                  <input matInput formControlName="lastName" />
+                </mat-form-field>
+              </div>
+
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-user-field"
+                  appearance="outline"
+                >
+                  <mat-label>Отчество</mat-label>
+                  <input matInput formControlName="patronymicName" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="mt-2">
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            class="mr-2"
+            (click)="onClickSave()"
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

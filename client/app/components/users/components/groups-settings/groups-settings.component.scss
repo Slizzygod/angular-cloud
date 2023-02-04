@@ -112,3 +112,7 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   align-items: center;
   justify-content: center;
 }
+
+:host mat-list {
+  max-height: 450px;
+}
