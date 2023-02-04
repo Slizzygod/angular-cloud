@@ -1,1 +1,150 @@
-<p>groups-settings works!</p>
+<div class="wrapper">
+  <div class="content">
+    <div class="groups">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Список групп ({{ groups.length }})</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-content">
+            <mat-list>
+              <mat-list-item
+                *ngFor="let group of groups"
+                class="list-item"
+                (click)="onClickGroup(group)"
+                [class.list-item-selected]="group === selectedGroup"
+              >
+                <span matTooltip="{{ group.name }}">
+                  {{ group.name }}
+                  <span class="users-count">({{ group.users.length }})</span>
+                </span>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onClickCreateGroup()"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onClickDeleteGroup()"
+            [disabled]="!selectedGroup"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div class="selected-group" *ngIf="selectedGroup">
+      <div class="selected-group-header">
+        <div class="selected-group-title">
+          <h3>{{ selectedGroup.name }}</h3>
+        </div>
+        <div class="selected-group-control"></div>
+      </div>
+
+      <div class="selected-group-edit-container">
+        <form [formGroup]="form">
+          <div class="selected-group-form-container">
+            <div class="selected-group-field-group-main">
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-group-field"
+                  appearance="outline"
+                >
+                  <mat-label>Название</mat-label>
+                  <input matInput formControlName="name" />
+                  <mat-error *ngIf="form.get('name').hasError('required')">
+                    Название обязательно
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-group-field"
+                  appearance="outline"
+                >
+                  <mat-label>Короткое название</mat-label>
+                  <input matInput formControlName="shortName" />
+                  <mat-error *ngIf="form.get('shortName').hasError('required')">
+                    Название обязательно
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="mb-2">
+                <mat-form-field
+                  class="selected-group-group-field"
+                  appearance="outline"
+                >
+                  <mat-label>Примечание</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="note"
+                    matTextareaAutosize="true"
+                    matAutosizeMinRows="2"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="selected-group-field-group-secondary">
+              <div class="users-list-container">
+                <mat-card>
+                  <mat-card-header>
+                    <mat-card-title>Сотрудники</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="users-card-content">
+                      <mat-list>
+                        <mat-list-item
+                          *ngFor="let user of users"
+                          class="list-item"
+                        >
+                          <div class="user-content">
+                            <div>
+                              <span class="username">{{ user.username }}</span>
+                              <span
+                                *ngIf="user.firstName && user.lastName"
+                                class="user-real-name"
+                                >({{ user.lastName }}
+                                {{ user.firstName }})</span
+                              >
+                            </div>
+                            <mat-checkbox (change)="onChangeUserState($event, user.id)" [checked]="user['state']" class="example-margin"></mat-checkbox>
+                          </div>
+                        </mat-list-item>
+                      </mat-list>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="mt-2">
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            class="mr-2"
+            [disabled]="form.invalid"
+            (click)="onClickSave()"
+          >
+            Сохранить
+          </button>
+          <!-- <button mat-raised-button type="button" (click)="onClickCancel()">Отмена</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

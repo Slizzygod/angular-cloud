@@ -30,7 +30,6 @@ export class UserService {
     if (!options.user) {
       options.user = this.currentUser;
     }
-    console.log(options.user)
     if (!options.user || !options.user.permissions) {
       return false;
     }

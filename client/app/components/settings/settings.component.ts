@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from './services/settings.service';
+import { SettingsService } from './services';
 
 import { Settings } from '@app/core/models';
 import { FormControl, FormGroup } from '@angular/forms';

@@ -30,10 +30,6 @@ export class GroupsCtrl {
       res.status(412).send('Group name is required');
     }
 
-    if (!shortName) {
-      res.status(412).send('Group short name is required');
-    }
-
     try {
       const group = await Group.create({
         name,
@@ -41,7 +37,7 @@ export class GroupsCtrl {
         note,
       });
 
-      res.json({ id: group.id });
+      res.json(group);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -59,7 +55,7 @@ export class GroupsCtrl {
     }
 
     try {
-      const group = await Group.findByPk(id);
+      const group = await Group.findOne({ where: { id } });
 
       if (!group) {
         res.status(404).send('Group not found');
@@ -71,6 +67,18 @@ export class GroupsCtrl {
       ]);
 
       res.json({ id: group.id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async deleteGroup(req: Request, res: Response): Promise<any> {
+    const id = req.params['id'];
+
+    try {
+      await Group.destroy({ where: { id } });
+
+      res.json({ id });
     } catch (error) {
       res.status(500).send(error.message);
     }

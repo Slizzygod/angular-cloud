@@ -13,7 +13,7 @@ export class Group extends Model {
   public readonly updatedAt!: Date;
 
   public name!: string;
-  public shortName!: string;
+  public shortName: string;
   public note: string;
 }
 
@@ -28,15 +28,14 @@ Group.init({
     allowNull: false
   },
   shortName: {
-    type: DataTypes.TEXT,
-    allowNull: false
+    type: DataTypes.TEXT
   },
   note: {
     type: DataTypes.TEXT
   }
 }, {
   sequelize: models.sequelize,
-  modelName: 'projects'
+  modelName: 'groups'
 });
 
 Group.belongsToMany(User,

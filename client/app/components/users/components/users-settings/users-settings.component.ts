@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+
+import { User } from '@app/core/models';
 
 @Component({
   selector: 'app-users-settings',
@@ -6,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./users-settings.component.scss']
 })
 export class UsersSettingsComponent {
+
+  @Input() users: User[] = [];
 
 }

@@ -1,10 +1,10 @@
 <div class="wrapper">
   <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
     <mat-tab label="Пользователи">
-      <app-users-settings></app-users-settings>
+      <app-users-settings [users]="users"></app-users-settings>
     </mat-tab>
     <mat-tab label="Группы">
-      <app-users-settings></app-users-settings>
+      <app-groups-settings [users]="users" [groups]="groups"></app-groups-settings>
     </mat-tab>
   </mat-tab-group>
 </div>
