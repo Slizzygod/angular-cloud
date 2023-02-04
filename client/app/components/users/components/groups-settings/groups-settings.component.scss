@@ -5,11 +5,12 @@
 $my-palette: mat.define-palette(mat.$indigo-palette);
 
 .wrapper {
-  padding: 1em;
+  padding-top: 1em;
 }
 
 .content {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .groups {
