@@ -7,7 +7,7 @@ import { StoreModule } from '@ngrx/store';
 import { metaReducers, reducers } from './core.state';
 import { AuthEffects, AuthGuardService } from './stores';
 import { JwtModule } from '@auth0/angular-jwt';
-import { LocalStorageService } from './services';
+import { LocalStorageService, PermsGuardService } from './services';
 import { EffectsModule } from '@ngrx/effects';
 import { NotificationService } from './services/notification.service';
 
@@ -17,12 +17,6 @@ export function tokenGetter() {
 }
 
 @NgModule({
-  declarations: [
-  ],
-  providers: [
-    AuthGuardService,
-    NotificationService
-  ],
   imports: [
     RouterModule,
     CommonModule,
@@ -33,6 +27,11 @@ export function tokenGetter() {
 
     JwtModule.forRoot({ config: { tokenGetter } }),
     SharedModule,
+  ],
+  providers: [
+    AuthGuardService,
+    NotificationService,
+    PermsGuardService
   ],
 })
 export class CoreModule {

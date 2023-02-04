@@ -8,35 +8,19 @@ import { StaticModule } from './static/static.modue';
 import { CoreModule } from './core/core.module';
 
 import { AppComponent } from './app.component';
-import {
-  CloudComponent,
-  JointComponent,
-  FavoritesComponent,
-  UploadComponent,
-  SettingsComponent,
-  UsersComponent,
-  LogsComponent,
-} from './components';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    CloudComponent,
-    JointComponent,
-    FavoritesComponent,
-    UploadComponent,
-    SettingsComponent,
-    UsersComponent,
-    LogsComponent,
+    AppComponent
   ],
   bootstrap: [AppComponent],
   imports: [
     StaticModule,
     BrowserModule,
+    CoreModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    SharedModule,
-    CoreModule,
+    SharedModule
   ],
 })
 export class AppModule {}

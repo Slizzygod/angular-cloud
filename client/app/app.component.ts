@@ -1,15 +1,16 @@
+import { PERMISSION_ADMIN } from '@app/shared/constants';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AuthActionTypes, selectIsAuthenticated } from './core/stores';
+import { selectIsAuthenticated } from './core/stores';
+import { UserService } from './core/services';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-
   isAuthenticated$: Observable<any> = this.store.select(selectIsAuthenticated);
 
   navigationSideMenu = [
@@ -34,12 +35,14 @@ export class AppComponent {
         {
           link: 'users',
           icon: 'group',
+          permissions: [PERMISSION_ADMIN],
         },
         {
           link: 'logs',
           icon: 'receipt_long',
-        }
-      ]
+          permissions: [PERMISSION_ADMIN],
+        },
+      ],
     },
     {
       items: [
@@ -50,11 +53,14 @@ export class AppComponent {
         {
           link: 'logout',
           icon: 'logout',
-        }
-      ]
-    }
+        },
+      ],
+    },
   ];
 
-  constructor(private store: Store) { }
+  constructor(private store: Store, private userService: UserService) {}
 
+  isPermittedLink(linkPermissions: string[]): boolean {
+    return this.userService.permissionGranted({ permissions: linkPermissions });
+  }
 }

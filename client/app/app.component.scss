@@ -33,7 +33,6 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   }
 }
 
-
 .active {
   background-color: mat.get-color-from-palette($my-palette, 800) !important;
   border-left: 3px solid mat.get-color-from-palette($my-palette, 300) !important;

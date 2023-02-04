@@ -8,6 +8,7 @@
         <div class="navigation-list" *ngFor="let subItem of navigationSideMenu">
           <ng-container *ngFor="let item of subItem.items">
             <a
+              *ngIf="isPermittedLink(item.permissions)"
               mat-list-item
               [routerLink]="[item.link]"
               routerLinkActive="active"

@@ -91,6 +91,16 @@ export class UsersCtrl {
     }
   }
 
+  async getUsers(req: Request, res: Response): Promise<any> {
+    try {
+      const data = await User.findAll();
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
 }
 
 export const usersCtrl = new UsersCtrl();
