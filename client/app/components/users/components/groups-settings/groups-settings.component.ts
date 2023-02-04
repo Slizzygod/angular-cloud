@@ -34,6 +34,7 @@ export class GroupsSettingsComponent {
     this.selectedGroup = group;
 
     this.users = this.users.map((user: User) => ({ ...user, state: !!group.users.find((el: User) => user.id === el.id) }));
+    this.users.sort((a: User, b: User) => b['state'] - a['state'])
 
     this.form.reset({
       name: group.name,
