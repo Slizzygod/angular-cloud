@@ -13,7 +13,7 @@ const routes: Routes = [
   {
     canActivate: [AuthGuardService],
     path: 'cloud',
-    loadChildren: () => import('./cloud/cloud.module').then(m => m.CloudModule),
+    loadChildren: () => import('./components/cloud/cloud.module').then(m => m.CloudModule),
     data: {
       title: 'Мое облако',
     }
@@ -21,7 +21,7 @@ const routes: Routes = [
   {
     canActivate: [AuthGuardService],
     path: 'joint',
-    loadChildren: () => import('./joint/joint.module').then(m => m.JointModule),
+    loadChildren: () => import('./components/joint/joint.module').then(m => m.JointModule),
     data: {
       title: 'Общедоступное',
     }
@@ -29,7 +29,7 @@ const routes: Routes = [
   {
     canActivate: [AuthGuardService],
     path: 'favorites',
-    loadChildren: () => import('./favorites/favorites.module').then(m => m.FavoritesModule),
+    loadChildren: () => import('./components/favorites/favorites.module').then(m => m.FavoritesModule),
     data: {
       title: 'Избранное',
     }
@@ -37,7 +37,7 @@ const routes: Routes = [
   {
     canActivate: [AuthGuardService],
     path: 'upload',
-    loadChildren: () => import('./upload/upload.module').then(m => m.UploadModule),
+    loadChildren: () => import('./components/upload/upload.module').then(m => m.UploadModule),
     data: {
       title: 'Загрузка',
     }
@@ -45,9 +45,25 @@ const routes: Routes = [
   {
     canActivate: [AuthGuardService],
     path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule),
+    loadChildren: () => import('./components/settings/settings.module').then(m => m.SettingsModule),
     data: {
       title: 'Настройки',
+    }
+  },
+  {
+    canActivate: [AuthGuardService],
+    path: 'users',
+    loadChildren: () => import('./components/users/users.module').then(m => m.UsersModule),
+    data: {
+      title: 'Управление пользователеями',
+    }
+  },
+  {
+    canActivate: [AuthGuardService],
+    path: 'logs',
+    loadChildren: () => import('./components/logs/logs.module').then(m => m.LogsModule),
+    data: {
+      title: 'Логи',
     }
   }
 ];

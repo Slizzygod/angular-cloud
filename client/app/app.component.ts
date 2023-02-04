@@ -31,6 +31,14 @@ export class AppComponent {
           link: 'upload',
           icon: 'cloud_upload',
         },
+        {
+          link: 'users',
+          icon: 'group',
+        },
+        {
+          link: 'logs',
+          icon: 'receipt_long',
+        }
       ]
     },
     {

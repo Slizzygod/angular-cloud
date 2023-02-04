@@ -5,6 +5,7 @@ export interface User {
   permissions: string[];
   firstName?: string;
   lastName?: string;
+  patronymicName?: string;
   createdAt?: string;
   exp: number | null;
 }

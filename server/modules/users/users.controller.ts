@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { User } from '../../core/models';
 import { config } from '../../core/config/env/all';
 import { PERMISSION_USER } from '../../shared/constants';
+import { usersService } from './users.service';
 
 export class UsersCtrl {
 
@@ -23,23 +24,27 @@ export class UsersCtrl {
     try {
       let user = await User.findOne({
         where: {
-          username
-        }
+          username,
+        },
       });
 
       if (user) {
-        const hashNewPassword = crypto.pbkdf2Sync(password, 'salt', 1000, 64, `sha512`).toString(`hex`);
+        const hashNewPassword = crypto
+          .pbkdf2Sync(password, 'salt', 1000, 64, `sha512`)
+          .toString(`hex`);
 
         if (user.password !== hashNewPassword) {
           return res.status(403).send('Permissions denied by passsword');
         }
       } else {
-        const hashNewPassword = crypto.pbkdf2Sync(password, 'salt', 1000, 64, `sha512`).toString(`hex`);
+        const hashNewPassword = crypto
+          .pbkdf2Sync(password, 'salt', 1000, 64, `sha512`)
+          .toString(`hex`);
 
         user = await User.create({
           username: username,
           password: hashNewPassword,
-          permissions: [PERMISSION_USER]
+          permissions: [PERMISSION_USER],
         });
       }
 
@@ -47,11 +52,42 @@ export class UsersCtrl {
         return res.sendStatus(403).send('Permissions denied');
       }
 
-      const token = jwt.sign({ id: user.id, username: user.username, permissions: user.permissions }, config.jwt.secretToken, { expiresIn: config.jwt.expiresIn });
+      const token = jwt.sign(
+        { id: user.id, username: user.username, permissions: user.permissions },
+        config.jwt.secretToken,
+        { expiresIn: config.jwt.expiresIn }
+      );
 
       res.json({ token });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getUserSettings(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const data = await User.findOne({ where: { id: user.id }, attributes: ['id', 'firstName', 'lastName', 'patronymicName'] });
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async updateUserSettings(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const patronymicName = req.body.patronymicName;
+
+    try {
+      await User.update({ firstName, lastName, patronymicName }, { where: { id: user.id } });
+
+      res.json({ id: user.id });
+    } catch (error) {
+      res.status(500).send(error.message);
     }
   }
 
