@@ -102,6 +102,10 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   background-color: mat.get-color-from-palette($my-palette, 100) !important;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 :host button {
   display: flex;
   align-items: center;

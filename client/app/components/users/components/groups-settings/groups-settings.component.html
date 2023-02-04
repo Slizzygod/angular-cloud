@@ -10,7 +10,7 @@
             <mat-list>
               <mat-list-item
                 *ngFor="let group of groups"
-                class="list-item"
+                class="list-item pointer"
                 (click)="onClickGroup(group)"
                 [class.list-item-selected]="group === selectedGroup"
               >

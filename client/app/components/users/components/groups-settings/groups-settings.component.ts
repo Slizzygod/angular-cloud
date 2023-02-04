@@ -31,6 +31,10 @@ export class GroupsSettingsComponent {
   ) {}
 
   onClickGroup(group: Group): void {
+    if (this.selectedGroup && group.id === this.selectedGroup.id) {
+      return;
+    }
+
     this.selectedGroup = group;
 
     this.users = this.users.map((user: User) => ({ ...user, state: !!group.users.find((el: User) => user.id === el.id) }));
@@ -104,6 +108,7 @@ export class GroupsSettingsComponent {
 
     if (needlyGroupIndex !== -1) {
       this.groups[needlyGroupIndex] = { ...this.groups[needlyGroupIndex], ...group };
+      this.selectedGroup = this.groups[needlyGroupIndex];
     }
 
     this.notificationService.success('Группа успешно обновлена')
