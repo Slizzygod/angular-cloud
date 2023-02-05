@@ -1,1 +1,9 @@
-<p>favorites works!</p>
+<div class="wrapper">
+  <app-cloud-structure
+    [folders]="folders"
+    (dblClickFolder)="onDblClickFolder($event)"
+    (deleteFavoriteFolder)="onDeleteFavoriteFolder($event)"
+    (deleteFolder)="onDeleteFolder($event)"
+    [disableActions]=true
+  ></app-cloud-structure>
+</div>

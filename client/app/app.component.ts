@@ -26,7 +26,7 @@ export class AppComponent {
         },
         {
           link: 'favorites',
-          icon: 'star',
+          icon: 'favorite',
         },
         {
           link: 'upload',

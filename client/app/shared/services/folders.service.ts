@@ -14,8 +14,8 @@ export class FoldersService {
     private http: HttpClient
   ) { }
 
-  getFolders(parentId?: number): Observable<any> {
-    return this.http.get('/api/folders', { params: { parentId } });
+  getFolders({ parentId, favorites }: { parentId: number, favorites?: boolean }): Observable<any> {
+    return this.http.get('/api/folders', { params: { parentId, favorites } });
   }
 
   createFolder(folder: Folder): Observable<any> {

@@ -7,18 +7,24 @@ import { foldersMapService } from './services';
 
 export class FoldersCtrl {
   async getFolders(req: Request, res: Response): Promise<any> {
-    let condition: any = { root: true };
-
     const parentId = Number(req.query['parentId']);
+    const favorites = req.query['favorites'];
     const user = usersService.getCurrentSessionUser(req);
 
+    let folderCondition: any = { root: true };
+    let folderFavoriteCondition: any = { userId: user.id }
+
     if (!isNaN(parentId)) {
-      condition = { parentId };
+      folderCondition = { parentId };
+    }
+
+    if (favorites !== 'undefined') {
+      folderCondition = {};
     }
 
     try {
       const folders = await Folder.findAll({
-        where: condition,
+        where: folderCondition,
         include: [
           {
             model: FolderUser,
@@ -28,8 +34,8 @@ export class FoldersCtrl {
           {
             model: FolderFavorite,
             as: 'favoritesFolders',
-            where: { userId: user.id },
-            separate: true
+            where: folderFavoriteCondition,
+            separate: favorites === 'undefined' ? true : false
           }
         ]
       });

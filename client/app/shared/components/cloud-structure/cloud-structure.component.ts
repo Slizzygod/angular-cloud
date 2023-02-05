@@ -13,7 +13,8 @@ import {
 })
 export class CloudStructureComponent {
 
-  @Input() folders: Folder[];
+  @Input() folders: Folder[] = [];
+  @Input() disableActions: boolean = false;
 
   @Output() createDocument: EventEmitter<Folder> = new EventEmitter();
   @Output() createFolder: EventEmitter<Folder> = new EventEmitter();

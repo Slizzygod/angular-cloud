@@ -45,7 +45,7 @@ export class CloudComponent implements OnInit {
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders(this.parent)
+      folders: this.foldersService.getFolders({ parentId: this.parent })
     }).subscribe({
       next: ({ folders }) => this.onDataLoaded(folders),
       error: (error: unknown) => this.onError(error)
@@ -125,7 +125,7 @@ export class CloudComponent implements OnInit {
   }
 
   onDeletedFolder(folder: Folder): void {
-    this.folders = this.folders.filter((el: Folder) => el.id!== folder.id);
+    this.folders = this.folders.filter((el: Folder) => Number(el.id) !== Number(folder.id));
 
     this.notificationService.success('Папка успешно удалена');
   }
