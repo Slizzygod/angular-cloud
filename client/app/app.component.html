@@ -13,7 +13,7 @@
               [routerLink]="[item.link]"
               routerLinkActive="active"
             >
-              <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
+              <mat-icon [matTooltip]="item.note" *ngIf="item.icon">{{ item.icon }}</mat-icon>
             </a>
           </ng-container>
         </div>

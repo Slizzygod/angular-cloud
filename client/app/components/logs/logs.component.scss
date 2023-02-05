@@ -1,0 +1,74 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// https://material.angular.io/guide/theming#reading-hues-from-palettes
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
+.wrapper {
+  padding: 1em;
+  overflow: hidden;
+}
+
+.content {
+  overflow: auto;
+  height: 85vh;
+}
+
+.alias {
+  border-left: 4px solid mat.get-color-from-palette($my-palette, 500);
+}
+
+.compact-column-150 {
+  flex: 0 0 150px;
+}
+
+.compact-column-170 {
+  flex: 0 0 170px;
+}
+
+.compact-column {
+  min-width: 300px;
+}
+
+:host mat-header-row {
+  border-top: 1px solid mat.get-color-from-palette($my-palette, 500);
+  border-bottom: 1px solid mat.get-color-from-palette($my-palette, 500);
+  background: #fff;
+  min-width: 1100px;
+}
+
+:host mat-row {
+  border-bottom: 1px solid mat.get-color-from-palette($my-palette, 500);
+  display: flex !important;
+  align-items: center !important;
+  align-items: flex-start;
+  min-height: 0;
+  min-width: 1100px;
+}
+
+:host mat-header-cell {
+  border-right: 1px solid mat.get-color-from-palette($my-palette, 500);
+  font-size: 12px;
+  font-weight: 600;
+  color: #202020;
+
+  &:last-of-type {
+    padding-right: 0;
+  }
+}
+
+:host mat-cell {
+  border-right: 1px solid mat.get-color-from-palette($my-palette, 500);
+  font-size: 12px;
+  color: #484545;
+  min-height: 30px;
+
+  &:last-of-type {
+    padding-right: 0;
+  }
+}
+
+:host hr {
+  width: 100vw;
+}
+

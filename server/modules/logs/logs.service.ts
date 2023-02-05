@@ -1,6 +1,6 @@
 import { Log } from "../../core/models";
 
-class LogService {
+class LogsService {
 
   async createLog(log: any): Promise<any> {
     return await Log.create(log);
@@ -8,4 +8,4 @@ class LogService {
 
 }
 
-export const logService = new LogService();
+export const logsService = new LogsService();

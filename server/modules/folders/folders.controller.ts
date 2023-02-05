@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { logService } from './../../shared/services/log.service';
+import { logsService } from '../logs/logs.service';
 import { Request, Response } from 'express';
 import { Folder, FolderFavorite, FolderUser } from '../../core/models';
 
@@ -109,7 +109,7 @@ export class FoldersCtrl {
     try {
       await Promise.all([
         Folder.destroy({ where: { id } }),
-        logService.createLog({
+        logsService.createLog({
           alias: 'createFolder',
           method: 'POST',
           userId: user.id,

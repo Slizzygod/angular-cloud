@@ -1,1 +1,70 @@
-<p>logs works!</p>
+<div class="wrapper">
+  <div class="ml-4">
+    <h3>Логи</h3>
+  </div>
+
+  <hr />
+
+  <div class="content">
+    <mat-table [dataSource]="source" matSort matSortActive="createdAt" matSortDirection="asc">
+
+      <ng-container matColumnDef="alias">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="alias compact-column-150">
+          Алиас
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="alias compact-column-150">
+          {{ row.alias }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="data">
+        <mat-header-cell *matHeaderCellDef class="compact-column">
+          Данные
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="compact-column">
+          {{ row.data | json }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="folder">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="compact-column-150">
+          Папка
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="compact-column-150">
+          {{ row.folder && row.folder.name }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="document">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="compact-column-150">
+          Документ
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="compact-column-150">
+          {{ row.document && row.document.name }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="user">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="compact-column-150">
+          Пользователь
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="compact-column-150">
+          {{ row.user && row.user.username }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="compact-column-170">
+          Дата создания
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row;" class="compact-column-170">
+          {{ row.createdAt | date:'medium' }}
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns;"></mat-row>
+
+    </mat-table>
+  </div>
+</div>

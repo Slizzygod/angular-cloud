@@ -24,6 +24,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 
 import { CloudStructureComponent } from './components';
 
@@ -54,7 +55,8 @@ import { CloudStructureComponent } from './components';
     MatDialogModule,
     MatTreeModule,
     MatBadgeModule,
-    MatTableModule
+    MatTableModule,
+    MatSortModule
   ],
   declarations: [
     CloudStructureComponent
@@ -86,6 +88,7 @@ import { CloudStructureComponent } from './components';
     MatTreeModule,
     MatBadgeModule,
     MatTableModule,
+    MatSortModule,
     CloudStructureComponent
   ]
 })

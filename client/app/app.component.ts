@@ -19,28 +19,34 @@ export class AppComponent {
         {
           link: 'cloud',
           icon: 'cloud',
+          note: 'Мое облако'
         },
         {
           link: 'joint',
           icon: 'folder_shared',
+          note: 'Доступные файлы'
         },
         {
           link: 'favorites',
           icon: 'favorite',
+          note: 'Избранное'
         },
         {
           link: 'upload',
           icon: 'cloud_upload',
+          note: 'Загрузить файлы'
         },
         {
           link: 'users',
           icon: 'group',
           permissions: [PERMISSION_ADMIN],
+          note: 'Управление пользователями'
         },
         {
           link: 'logs',
           icon: 'receipt_long',
           permissions: [PERMISSION_ADMIN],
+          note: 'Логи'
         },
       ],
     },
@@ -49,10 +55,12 @@ export class AppComponent {
         {
           link: 'settings',
           icon: 'settings',
+          note: 'Настройки профиля'
         },
         {
           link: 'logout',
           icon: 'logout',
+          note: 'Выход'
         },
       ],
     },

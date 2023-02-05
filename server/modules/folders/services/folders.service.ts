@@ -1,4 +1,4 @@
-import { logService } from '../../../shared/services';
+import { logsService } from '../../logs/logs.service';
 import { Folder } from './../../../core/models';
 
 class FoldersService {
@@ -7,7 +7,7 @@ class FoldersService {
 
     const folder = await Folder.create({ name, root, parentId: parentId || null, group: group || null });
 
-    await logService.createLog({
+    await logsService.createLog({
       alias: 'createFolder',
       method: 'POST',
       data: { name, root },
@@ -29,7 +29,7 @@ class FoldersService {
 
     const result = await Folder.update({ name }, { where: condition, returning: true });
 
-    await logService.createLog({
+    await logsService.createLog({
       alias: 'createFolder',
       method: 'POST',
       data: { name },
