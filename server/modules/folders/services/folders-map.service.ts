@@ -16,6 +16,7 @@ class FoldersMapService {
     return {
       id: folder.id,
       name: folder.name,
+      owner: folder.foldersUsers[0].owner,
       favorite: !!folder.favoritesFolders.find((el: FolderFavorite) => folder.id === el.folderId),
       parentId: folder.parentId,
       root: folder.root,

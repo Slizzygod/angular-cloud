@@ -1,49 +1,56 @@
 <div class="wrapper">
-  <div (mouseover)="folder['isHover'] = true" (mouseout)="folder['isHover'] = false" *ngFor="let folder of folders">
-    <div
-      class="folder"
-      [class.selected]="selectedFolder && selectedFolder.id === folder.id"
-      (click)="onClickFolder(folder)"
-      (dblclick)="onDblClickFolder(folder)"
-    >
-      <div class="folder-content">
-        <div class="delete">
-          <mat-icon
-            [class.hidden]="!folder['isHover']"
-            (click)="onClickDeleteFolder($event, folder)"
-            color="primary"
-            >clear</mat-icon
-          >
-        </div>
-        <img [src]="getFolderIcon('folder')" width="100" />
-        <div class="name">
-          <mat-icon
-            *ngIf="folder.favorite"
-            (click)="onClickDeleteFavoriteFolder($event, folder)"
-            color="primary"
-            >favorite</mat-icon
-          >
-          <mat-icon
-            *ngIf="!folder.favorite"
-            (click)="onClickAddFavoriteFolder($event, folder)"
-            color="primary"
-            >favorite_outline</mat-icon
-          >
-          <span>{{ folder.name }}</span>
+  <div class="empty-data" *ngIf="disableActions && folders.length === 0; else ready">
+    Нет данных
+  </div>
+
+  <ng-template #ready>
+    <div (mouseover)="folder['isHover'] = true" (mouseout)="folder['isHover'] = false" *ngFor="let folder of folders">
+      <div
+        class="folder"
+        [class.selected]="selectedFolder && selectedFolder.id === folder.id"
+        (click)="onClickFolder(folder)"
+        (dblclick)="onDblClickFolder(folder)"
+      >
+        <div class="folder-content">
+          <div class="delete">
+            <mat-icon
+              *ngIf="folder.owner"
+              [class.hidden]="!folder['isHover']"
+              (click)="onClickDeleteFolder($event, folder)"
+              color="primary"
+              >clear</mat-icon
+            >
+          </div>
+          <img [src]="getFolderIcon('folder')" width="100" />
+          <div class="name">
+            <mat-icon
+              *ngIf="folder.favorite"
+              (click)="onClickDeleteFavoriteFolder($event, folder)"
+              color="primary"
+              >favorite</mat-icon
+            >
+            <mat-icon
+              *ngIf="!folder.favorite"
+              (click)="onClickAddFavoriteFolder($event, folder)"
+              color="primary"
+              >favorite_outline</mat-icon
+            >
+            <span>{{ folder.name }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
-    <mat-icon color="primary">add</mat-icon>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="onClickCreateDocument()">
-        Создать документ
-      </button>
-      <button mat-menu-item (click)="onClickCreateFolder()">
-        Создать папку
-      </button>
-    </mat-menu>
-  </div>
+    <div *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
+      <mat-icon color="primary">add</mat-icon>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onClickCreateDocument()">
+          Создать документ
+        </button>
+        <button mat-menu-item (click)="onClickCreateFolder()">
+          Создать папку
+        </button>
+      </mat-menu>
+    </div>
+  </ng-template>
 </div>

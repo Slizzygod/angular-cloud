@@ -34,7 +34,7 @@ export class CloudComponent implements OnInit {
   }
 
   getFolderFromList(id: number): Folder {
-    return this.folders.find((el: Folder) => Number(el.id )=== Number(id));
+    return this.folders.find((el: Folder) => Number(el.id ) === Number(id));
   }
 
   onParamsLoaded(params: Params): void {
@@ -45,7 +45,7 @@ export class CloudComponent implements OnInit {
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders({ parentId: this.parent })
+      folders: this.foldersService.getFolders({ parentId: this.parent, owner: !this.parent && true })
     }).subscribe({
       next: ({ folders }) => this.onDataLoaded(folders),
       error: (error: unknown) => this.onError(error)

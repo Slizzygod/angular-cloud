@@ -1,25 +1,34 @@
+import { Op } from 'sequelize';
 import { logService } from './../../shared/services/log.service';
 import { Request, Response } from 'express';
 import { Folder, FolderFavorite, FolderUser } from '../../core/models';
 
 import { usersService } from '../users/users.service';
-import { foldersMapService } from './services';
+import { foldersMapService, foldersService } from './services';
 
 export class FoldersCtrl {
   async getFolders(req: Request, res: Response): Promise<any> {
     const parentId = Number(req.query['parentId']);
-    const favorites = req.query['favorites'];
+    const favorites = Boolean(req.query['favorites']);
+    const owner = Boolean(req.query['owner']);
+
     const user = usersService.getCurrentSessionUser(req);
 
     let folderCondition: any = { root: true };
-    let folderFavoriteCondition: any = { userId: user.id }
+    let folderFavoriteCondition: any = { userId: user.id };
+    let folderUserCondition: any = { userId: user.id, owner: { [Op.or]: [false, null] } };
 
     if (!isNaN(parentId)) {
       folderCondition = { parentId };
     }
 
-    if (favorites !== 'undefined') {
+    if (favorites) {
       folderCondition = {};
+      folderUserCondition = { userId: user.id }
+    }
+
+    if (owner) {
+      folderUserCondition.owner = true
     }
 
     try {
@@ -29,13 +38,13 @@ export class FoldersCtrl {
           {
             model: FolderUser,
             as: 'foldersUsers',
-            where: { userId: user.id, owner: true },
+            where: folderUserCondition,
           },
           {
             model: FolderFavorite,
             as: 'favoritesFolders',
             where: folderFavoriteCondition,
-            separate: favorites === 'undefined' ? true : false
+            separate: favorites ? false : true
           }
         ]
       });
@@ -64,18 +73,9 @@ export class FoldersCtrl {
     }
 
     try {
-      const folder = await Folder.create(folderData);
+      const folder = await foldersService.createFolder({ ...folderData, userId: user.id });
 
-      await Promise.all([
-        FolderUser.create({ userId: user.id, folderId: folder.id }),
-        logService.createLog({
-          alias: 'createFolder',
-          method: 'POST',
-          data: { name, root },
-          userId: user.id,
-          folderId: folder.id,
-        }),
-      ]);
+      await FolderUser.create({ userId: user.id, folderId: folder.id });
 
       res.send(folder);
     } catch (error) {
@@ -85,7 +85,7 @@ export class FoldersCtrl {
 
   async updateFolder(req: Request, res: Response): Promise<any> {
     const user = usersService.getCurrentSessionUser(req);
-    const id = req.params['id'];
+    const id = Number(req.params['id']);
     const name = req.body.name;
 
     if (!name) {
@@ -93,16 +93,8 @@ export class FoldersCtrl {
     }
 
     try {
-      await Promise.all([
-        Folder.update({ name }, { where: { id } }),
-        logService.createLog({
-          alias: 'createFolder',
-          method: 'POST',
-          data: { name },
-          userId: user.id,
-          folderId: id,
-        }),
-      ]);
+      await foldersService.updateFolder({ id, name, userId: user.id });
+
 
       res.json({ id });
     } catch (error) {

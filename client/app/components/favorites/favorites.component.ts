@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Folder } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { FoldersService } from '@app/shared/services';
-import { forkJoin, Subscription } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-favorites',
@@ -12,36 +12,21 @@ import { forkJoin, Subscription } from 'rxjs';
 })
 export class FavoritesComponent implements OnInit {
 
-  private subscriptions = new Subscription();
-
   folders: Folder[] = [];
-  parent: number = null;
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private foldersService: FoldersService,
     private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.route.params.subscribe({
-        next: (params) => this.onParamsLoaded(params),
-        error: (error) => this.onError(error),
-      })
-    );
-  }
-
-  onParamsLoaded(params: Params): void {
-    this.parent = params['id'];
-
     this.onGetData();
   }
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders({ parentId: this.parent, favorites: true })
+      folders: this.foldersService.getFolders({ favorites: true })
     }).subscribe({
       next: ({ folders }) => this.onDataLoaded(folders),
       error: (error: unknown) => this.onError(error)

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { FolderFavorite } from "./folder-favorite";
+import { FolderUser } from "./folder-user";
 
 import { models } from "./sequelize";
 
@@ -11,8 +12,10 @@ export class Folder extends Model {
   public name!: string | undefined;
   public root!: boolean;
   public parentId: number;
+  public group: number;
 
   public favoritesFolders?: FolderFavorite[];
+  public foldersUsers?: FolderUser[];
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -32,6 +35,9 @@ Folder.init({
     type: DataTypes.BOOLEAN
   },
   parentId: {
+    type: DataTypes.INTEGER,
+  },
+  group: {
     type: DataTypes.INTEGER,
   }
 }, {

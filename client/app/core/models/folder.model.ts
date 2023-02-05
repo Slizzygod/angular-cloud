@@ -4,6 +4,7 @@ export interface Folder {
   favorite?: boolean;
   parentId?: number;
   root?: boolean;
+  owner?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

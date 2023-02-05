@@ -6,16 +6,29 @@ import { Observable } from 'rxjs';
 import { Folder } from '@app/core/models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FoldersService {
+  constructor(private http: HttpClient) {}
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  getFolders(data: FolderOptions = {}): Observable<any> {
+    const { parentId, favorites, owner } = data;
 
-  getFolders({ parentId, favorites }: { parentId: number, favorites?: boolean }): Observable<any> {
-    return this.http.get('/api/folders', { params: { parentId, favorites } });
+    const params: any = {};
+
+    if (parentId) {
+      params.parentId = parentId;
+    }
+
+    if (favorites) {
+      params.favorites = favorites;
+    }
+
+    if (owner) {
+      params.owner = owner;
+    }
+
+    return this.http.get('/api/folders', { params });
   }
 
   createFolder(folder: Folder): Observable<any> {
@@ -37,5 +50,10 @@ export class FoldersService {
   deleteFolderFavorite(id: number): Observable<any> {
     return this.http.delete(`/api/folders/${id}/favorite`);
   }
+}
 
+export interface FolderOptions {
+  parentId?: number;
+  favorites?: boolean;
+  owner?: boolean;
 }
