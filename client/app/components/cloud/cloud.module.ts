@@ -11,4 +11,8 @@ import { CloudComponent } from './cloud.component';
   providers: [],
   imports: [RouterModule, CommonModule, CloudRoutingModule, SharedModule],
 })
-export class CloudModule {}
+export class CloudModule {
+
+  constructor() { }
+
+}

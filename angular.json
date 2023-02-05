@@ -36,7 +36,8 @@
             "scripts": [],
             "allowedCommonJsDependencies": [
               "rxjs",
-              "crypto-js"
+              "crypto-js",
+              "file-extension-icon-js"
             ]
           },
           "configurations": {

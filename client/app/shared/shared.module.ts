@@ -25,6 +25,8 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
 
+import { CloudStructureComponent } from './components';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -54,7 +56,9 @@ import { MatTableModule } from '@angular/material/table';
     MatBadgeModule,
     MatTableModule
   ],
-  declarations: [],
+  declarations: [
+    CloudStructureComponent
+  ],
   exports: [
     CommonModule,
     FormsModule,
@@ -81,7 +85,8 @@ import { MatTableModule } from '@angular/material/table';
     MatDialogModule,
     MatTreeModule,
     MatBadgeModule,
-    MatTableModule
+    MatTableModule,
+    CloudStructureComponent
   ]
 })
 

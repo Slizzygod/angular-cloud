@@ -1,8 +1,6 @@
 import { DataTypes, Model } from "sequelize";
-import { GroupUser } from "./group-user";
 
 import { models } from "./sequelize";
-import { User } from "./user";
 
 export class Group extends Model {
   ['setUsers']: any;
@@ -37,10 +35,3 @@ Group.init({
   sequelize: models.sequelize,
   modelName: 'groups'
 });
-
-Group.belongsToMany(User,
-  { as: 'users', through: GroupUser, foreignKey: 'groupId', otherKey: 'userId' }
-);
-User.belongsToMany(Group,
-  { as: 'groups', through: GroupUser, foreignKey: 'userId', otherKey: 'groupId' }
-);

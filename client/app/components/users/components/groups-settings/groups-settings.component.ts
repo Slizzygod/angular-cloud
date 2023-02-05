@@ -7,6 +7,7 @@ import { Group, User } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
+// TODO: Доверстать под мобилки, посмотреть для групп OnDelete, OnUpdate
 @Component({
   selector: 'app-groups-settings',
   templateUrl: './groups-settings.component.html',

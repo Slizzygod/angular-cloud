@@ -1,1 +1,9 @@
-<p>cloud works!</p>
+<div class="wrapper">
+  <div class="structure">
+    <app-cloud-structure
+      [folders]="folders"
+      (createFolder)="onClickCreateFolder()"
+      (createDocument)="onClickCreateDocument()"
+    ></app-cloud-structure>
+  </div>
+</div>
