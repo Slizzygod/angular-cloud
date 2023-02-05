@@ -6,17 +6,10 @@ const routes: Routes = [
   {
     path: '',
     component: CloudComponent,
-    children: [
-      {
-        path: '',
-        redirectTo: '',
-        pathMatch: 'full',
-      },
-      {
-        path: 'folders/:id',
-        component: CloudComponent,
-      }
-    ]
+  },
+  {
+    path: 'folders/:id',
+    component: CloudComponent,
   }
 ];
 

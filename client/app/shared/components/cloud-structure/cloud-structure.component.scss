@@ -1,3 +1,9 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// https://material.angular.io/guide/theming#reading-hues-from-palettes
+$my-palette: mat.define-palette(mat.$indigo-palette);
+
 .wrapper {
   display: flex;
   align-items: center;
@@ -7,7 +13,7 @@
 
 .folder {
   width: 150px;
-  height: 150px;
+  height: 160px;
   border-radius: 1em;
   cursor: pointer;
 
@@ -22,6 +28,17 @@
 
   &:hover {
     background: #f0f1f3a9;
+  }
+
+  mat-icon {
+    height: 15px;
+    width: 15px;
+    font-size: 15px;
+
+    &:hover {
+      cursor: pointer;
+      color: mat.get-color-from-palette($my-palette, 900) !important
+    }
   }
 }
 
@@ -38,4 +55,26 @@
   &:hover {
     background: #f0f1f3a9;
   }
+}
+
+.hidden {
+  visibility : hidden;
+}
+
+.selected {
+  background: #f0f1f3a9;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.delete {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 0.2em 0.5em 0 0;
 }

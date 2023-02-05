@@ -1,9 +1,11 @@
 <div class="wrapper">
-  <div class="structure">
-    <app-cloud-structure
-      [folders]="folders"
-      (createFolder)="onClickCreateFolder()"
-      (createDocument)="onClickCreateDocument()"
-    ></app-cloud-structure>
-  </div>
+  <app-cloud-structure
+    [folders]="folders"
+    (createDocument)="onCreateDocument()"
+    (createFolder)="onCreateFolder()"
+    (dblClickFolder)="onDblClickFolder($event)"
+    (addFavoriteFolder)="onAddFavoriteFolder($event)"
+    (deleteFavoriteFolder)="onDeleteFavoriteFolder($event)"
+    (deleteFolder)="onDeleteFolder($event)"
+  ></app-cloud-structure>
 </div>

@@ -1,29 +1,42 @@
 import { logService } from './../../shared/services/log.service';
 import { Request, Response } from 'express';
-import { Folder, FolderUser } from '../../core/models';
+import { Folder, FolderFavorite, FolderUser } from '../../core/models';
 
 import { usersService } from '../users/users.service';
+import { foldersMapService } from './services';
 
 export class FoldersCtrl {
   async getFolders(req: Request, res: Response): Promise<any> {
+    let condition: any = { root: true };
+
+    const parentId = Number(req.query['parentId']);
     const user = usersService.getCurrentSessionUser(req);
 
+    if (!isNaN(parentId)) {
+      condition = { parentId };
+    }
+
     try {
-      const data = await FolderUser.findAll({
-        where: { userId: user.id, owner: true },
+      const folders = await Folder.findAll({
+        where: condition,
         include: [
           {
-            model: Folder,
-            as: 'folder',
-            where: { root: true },
+            model: FolderUser,
+            as: 'foldersUsers',
+            where: { userId: user.id, owner: true },
           },
-        ],
-        order: [['createdAt', 'ASC']],
+          {
+            model: FolderFavorite,
+            as: 'favoritesFolders',
+            where: { userId: user.id },
+            separate: true
+          }
+        ]
       });
 
-      const folders = data.map((el: FolderUser) => el.folder);
+      const foldersMap = foldersMapService.getFoldersMap(folders);
 
-      res.send(folders);
+      res.send(foldersMap);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -33,16 +46,22 @@ export class FoldersCtrl {
     const user = usersService.getCurrentSessionUser(req);
     const name = req.body.name;
     const root = Boolean(req.body.root);
+    const parentId = Number(req.body.parentId);
+    const folderData = { name, root, parentId: null };
 
     if (!name) {
-      res.status(412).send('Folder name is required');
+      return res.status(412).send('Folder name is required');
+    }
+
+    if (!isNaN(parentId)) {
+      folderData.parentId = parentId;
     }
 
     try {
-      const folder = await Folder.create({ name, root });
+      const folder = await Folder.create(folderData);
 
       await Promise.all([
-        folder.setUsers([user.id]),
+        FolderUser.create({ userId: user.id, folderId: folder.id }),
         logService.createLog({
           alias: 'createFolder',
           method: 'POST',
@@ -64,7 +83,7 @@ export class FoldersCtrl {
     const name = req.body.name;
 
     if (!name) {
-      res.status(412).send('Folder name is required');
+      return res.status(412).send('Folder name is required');
     }
 
     try {
@@ -99,6 +118,38 @@ export class FoldersCtrl {
           folderId: id,
         }),
       ]);
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async setFolderFavorite(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const id = req.params['id'];
+
+    try {
+      const folderFavorite = await FolderFavorite.findOne({ where: { userId: user.id, folderId: id } });
+
+      if (folderFavorite) {
+        return res.status(400).send('Folder is already favorited');
+      }
+
+      await FolderFavorite.create({ userId: user.id, folderId: id });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async deleteFolderFavorite(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const id = req.params['id'];
+
+    try {
+      await FolderFavorite.destroy({ where: { userId: user.id, folderId: id } });
 
       res.json({ id });
     } catch (error) {

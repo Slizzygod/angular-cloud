@@ -27,7 +27,7 @@ export class GroupsCtrl {
     const note = req.body.note;
 
     if (!name) {
-      res.status(412).send('Group name is required');
+      return res.status(412).send('Group name is required');
     }
 
     try {
@@ -51,14 +51,14 @@ export class GroupsCtrl {
     const users = req.body.users;
 
     if (!Array.isArray(users)) {
-      res.status(412).send('Users must be an array');
+      return res.status(412).send('Users must be an array');
     }
 
     try {
       const group = await Group.findOne({ where: { id } });
 
       if (!group) {
-        res.status(404).send('Group not found');
+        return res.status(404).send('Group not found');
       }
 
       await Promise.all([

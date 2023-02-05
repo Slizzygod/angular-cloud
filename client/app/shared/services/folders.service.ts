@@ -14,8 +14,8 @@ export class FoldersService {
     private http: HttpClient
   ) { }
 
-  getFolders(): Observable<any> {
-    return this.http.get('/api/folders');
+  getFolders(parentId?: number): Observable<any> {
+    return this.http.get('/api/folders', { params: { parentId } });
   }
 
   createFolder(folder: Folder): Observable<any> {
@@ -28,6 +28,14 @@ export class FoldersService {
 
   deleteFolder(id: number): Observable<any> {
     return this.http.delete(`/api/folders/${id}`);
+  }
+
+  setFolderFavorite(id: number): Observable<any> {
+    return this.http.post(`/api/folders/${id}/favorite`, {});
+  }
+
+  deleteFolderFavorite(id: number): Observable<any> {
+    return this.http.delete(`/api/folders/${id}/favorite`);
   }
 
 }

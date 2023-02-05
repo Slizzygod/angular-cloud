@@ -14,11 +14,11 @@ export class UsersCtrl {
     const password = req.body.password;
 
     if (!username) {
-      res.status(404).send('Username required');
+      return res.status(404).send('Username required');
     }
 
     if (!password) {
-      res.status(404).send('Password required');
+      return res.status(404).send('Password required');
     }
 
     try {
@@ -111,7 +111,7 @@ export class UsersCtrl {
       const user = await User.findOne({ where: { id } });
 
       if (!user) {
-        res.status(404).send('User not found');
+        return res.status(404).send('User not found');
       }
 
       await user.update({ firstName, lastName, patronymicName });
@@ -129,7 +129,7 @@ export class UsersCtrl {
       const user = await User.findOne({ where: { id } });
 
       if (!user) {
-        res.status(404).send('User not found');
+        return res.status(404).send('User not found');
       }
 
       await user.update({ blocked: true });
@@ -147,7 +147,7 @@ export class UsersCtrl {
       const user = await User.findOne({ where: { id } });
 
       if (!user) {
-        res.status(404).send('User not found');
+        return res.status(404).send('User not found');
       }
 
       await user.update({ blocked: false });

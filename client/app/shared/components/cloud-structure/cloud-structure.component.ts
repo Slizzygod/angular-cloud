@@ -12,13 +12,23 @@ import {
   styleUrls: ['./cloud-structure.component.scss'],
 })
 export class CloudStructureComponent {
+
   @Input() folders: Folder[];
 
   @Output() createDocument: EventEmitter<Folder> = new EventEmitter();
   @Output() createFolder: EventEmitter<Folder> = new EventEmitter();
+  @Output() dblClickFolder: EventEmitter<Folder> = new EventEmitter();
+  @Output() addFavoriteFolder: EventEmitter<Folder> = new EventEmitter();
+  @Output() deleteFavoriteFolder: EventEmitter<Folder> = new EventEmitter();
+  @Output() deleteFolder: EventEmitter<Folder> = new EventEmitter();
+
+  selectedFolder: Folder = null;
+  isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
   getFileIcon = getMaterialFileIcon;
+
+  constructor() {}
 
   onClickCreateDocument(): void {
     this.createDocument.emit();
@@ -27,4 +37,31 @@ export class CloudStructureComponent {
   onClickCreateFolder(): void {
     this.createFolder.emit();
   }
+
+  onDblClickFolder(folder: Folder): void {
+    this.dblClickFolder.emit(folder);
+  }
+
+  onClickFolder(folder: Folder): void {
+    this.selectedFolder = folder;
+  }
+
+  onClickAddFavoriteFolder(event: Event, folder: Folder): void {
+    event.stopPropagation();
+
+    this.addFavoriteFolder.emit(folder);
+  }
+
+  onClickDeleteFavoriteFolder(event: Event, folder: Folder): void {
+    event.stopPropagation();
+
+    this.deleteFavoriteFolder.emit(folder);
+  }
+
+  onClickDeleteFolder(event: Event, folder: Folder): void {
+    event.stopPropagation();
+
+    this.deleteFolder.emit(folder);
+  }
+
 }

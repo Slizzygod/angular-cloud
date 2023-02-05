@@ -4,3 +4,4 @@ export * from './group-user';
 export * from './folder';
 export * from './folder-user';
 export * from './log';
+export * from './folder-favorite'

@@ -50,5 +50,5 @@ Log.init({
   modelName: 'logs'
 });
 
-Log.hasOne(User, { as: 'user', foreignKey: 'userId' });
-Log.hasOne(Folder, { as: 'folder', foreignKey: 'folderId' });
+Log.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+Log.belongsTo(Folder, { as: 'folder', foreignKey: 'folderId' });

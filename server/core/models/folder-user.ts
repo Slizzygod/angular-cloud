@@ -40,12 +40,8 @@ FolderUser.init({
   modelName: 'folders_users',
 });
 
-Folder.belongsToMany(User,
-  { as: 'users', through: FolderUser, foreignKey: 'folderId', otherKey: 'userId' }
-);
-User.belongsToMany(Folder,
-  { as: 'folders', through: FolderUser, foreignKey: 'userId', otherKey: 'folderId' }
-);
-
+User.hasMany(FolderUser, { as: 'foldersUsers', foreignKey: 'userId' });
 FolderUser.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+
+Folder.hasMany(FolderUser, { as: 'foldersUsers', foreignKey: 'folderId' });
 FolderUser.belongsTo(Folder, { as: 'folder', foreignKey: 'folderId' });
