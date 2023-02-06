@@ -1,8 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Folder, Document } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { DocumentsService, FoldersService } from '@app/shared/services';
+import { ShareComponent } from '../share/share.component';
 
 import {
   getMaterialFileIcon,
@@ -14,7 +17,9 @@ import {
   templateUrl: './cloud-structure.component.html',
   styleUrls: ['./cloud-structure.component.scss'],
 })
-export class CloudStructureComponent {
+export class CloudStructureComponent implements OnDestroy {
+
+  private subscriptions = new Subscription();
 
   @Input() folders: Folder[] = [];
   @Input() documents: Document[] = [];
@@ -32,6 +37,7 @@ export class CloudStructureComponent {
     private foldersService: FoldersService,
     private documentsService: DocumentsService,
     private notificationService: NotificationService,
+    public dialog: MatDialog,
     private router: Router
   ) {}
 
@@ -206,12 +212,54 @@ export class CloudStructureComponent {
     this.notificationService.success('Папка успешно удалена');
   }
 
+  onClickShare(mode: 'folder' | 'document', entity: Folder | Document): void {
+    const dialogRef = this.dialog.open(ShareComponent, {
+      data: { shared: entity.shared },
+      width: '40vh',
+    });
+
+    this.subscriptions.add(
+      dialogRef.afterClosed().subscribe({
+        next: (users: number[]) => this.onShare(users, mode, entity),
+        error: (error: unknown) => this.onError(error)
+      })
+    );
+  }
+
+  onShare(users: number[], mode: 'folder' | 'document', entity: Folder | Document): void {
+    if (users) {
+      if (mode === 'folder') {
+        this.foldersService.shareFolder(entity.id, users).subscribe({
+          next: () => this.onShared(users, entity),
+          error: (error: unknown) => this.onError(error)
+        });
+      }
+
+      if (mode === 'document') {
+        this.documentsService.shareDocument(entity.id, users).subscribe({
+          next: () => this.onShared(users, entity),
+          error: (error: unknown) => this.onError(error)
+        });
+      }
+    }
+  }
+
+  onShared(users: number[], entity: Folder | Document): void {
+    entity.shared = users;
+
+    this.notificationService.success('Успешно расшарено');
+  }
+
   onClickUploadFile(): void {
 
   }
 
   onError(error: unknown): void {
     console.error(error);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

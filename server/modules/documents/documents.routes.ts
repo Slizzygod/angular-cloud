@@ -10,5 +10,6 @@ export function setDocumentsRoutes(router: express.Router) {
   router.route('/documents/:id').delete(documentsCtrl.deleteDocument);
   router.route('/documents/:id/favorite').post(documentsCtrl.setDocumentFavorite);
   router.route('/documents/:id/favorite').delete(documentsCtrl.deleteDocumentFavorite);
+  router.route('/documents/:id/share').post(documentsCtrl.shareDocument);
 
 }

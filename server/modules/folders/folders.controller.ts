@@ -16,33 +16,31 @@ export class FoldersCtrl {
 
     let folderCondition: any = { root: true };
     let folderFavoriteCondition: any = { userId: user.id };
-    let folderUserCondition: any = { userId: user.id };
+    let folderUserCondition: any = { '$foldersUsers.userId$': user.id };
 
     if (!isNaN(parentId)) {
       folderCondition = { parentId };
     }
 
-    if (favorites) {
-      folderCondition = {};
-      folderUserCondition = { userId: user.id }
-    }
-
     if (owner) {
-      folderUserCondition.owner = true;
+      folderUserCondition['$foldersUsers.owner$'] = true;
     }
 
     if (!favorites && !parentId && !owner) {
-      folderUserCondition.owner = { [Op.or]: [false, null] };
+      folderUserCondition['$foldersUsers.owner$'] = { [Op.or]: [false, null] };
+    }
+
+    if (favorites) {
+      folderCondition = {};
     }
 
     try {
       const folders = await Folder.findAll({
-        where: folderCondition,
+        where: { ...folderCondition, ...folderUserCondition },
         include: [
           {
             model: FolderUser,
             as: 'foldersUsers',
-            where: folderUserCondition,
           },
           {
             model: FolderFavorite,
@@ -53,7 +51,7 @@ export class FoldersCtrl {
         ]
       });
 
-      const foldersMap = foldersMapService.getFoldersMap(folders);
+      const foldersMap = await foldersMapService.getFoldersMap(folders, user.id);
 
       res.send(foldersMap);
     } catch (error) {
@@ -153,6 +151,23 @@ export class FoldersCtrl {
 
     try {
       await FolderFavorite.destroy({ where: { userId: user.id, folderId: id } });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async shareFolder(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params['id']);
+    const users = req.body.users || [];
+
+    try {
+      await FolderUser.destroy({ where: { folderId: id, owner: false } });
+
+      if (users.length > 0) {
+        await FolderUser.bulkCreate(users.map((el: number) => ({ userId: el, folderId: id, owner: false })));
+      }
 
       res.json({ id });
     } catch (error) {

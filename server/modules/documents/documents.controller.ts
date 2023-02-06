@@ -16,34 +16,32 @@ export class DocumentsCtrl {
     const user = usersService.getCurrentSessionUser(req);
 
     let documentCondition: any = { root: true };
-    let documentUserCondition: any = { userId: user.id };
     let documentFavoriteCondition: any = { userId: user.id };
+    let documentUserCondition: any = { '$documentsUsers.userId$': user.id };
 
     if (!isNaN(folderId)) {
       documentCondition = { folderId };
     }
 
     if (owner) {
-      documentUserCondition.owner = true
+      documentUserCondition['$documentsUsers.owner$'] = true
     }
 
     if (!favorites && !folderId && !owner) {
-      documentUserCondition.owner = { [Op.or]: [false, null] };
+      documentUserCondition['$documentsUsers.owner$'] = { [Op.or]: [false, null] };
     }
 
     if (favorites) {
       documentCondition = {};
-      documentUserCondition = { userId: user.id };
     }
 
     try {
       const documents = await Document.findAll({
-        where: documentCondition,
+        where: { ...documentCondition, ...documentUserCondition },
         include: [
           {
             model: DocumentUser,
             as: 'documentsUsers',
-            where: documentUserCondition,
           },
           {
             model: DocumentFavorite,
@@ -54,7 +52,7 @@ export class DocumentsCtrl {
         ]
       });
 
-      const documentsMap = documentsMapService.getDocumentsMap(documents);
+      const documentsMap = await documentsMapService.getDocumentsMap(documents, user.id);
 
       res.send(documentsMap);
     } catch (error) {
@@ -168,6 +166,23 @@ export class DocumentsCtrl {
 
     try {
       await DocumentFavorite.destroy({ where: { userId: user.id, documentId: id } });
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async shareDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params['id']);
+    const users = req.body.users || [];
+
+    try {
+      await DocumentUser.destroy({ where: { documentId: id, owner: false } });
+
+      if (users.length > 0) {
+        await DocumentUser.bulkCreate(users.map((el: number) => ({ userId: el, documentId: id, owner: false })));
+      }
 
       res.json({ id });
     } catch (error) {

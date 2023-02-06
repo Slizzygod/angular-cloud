@@ -13,7 +13,7 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
 
 .entity {
   width: 150px;
-  height: 160px;
+  height: 190px;
   border-radius: 1em;
   cursor: pointer;
 
@@ -24,6 +24,7 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
     justify-content: center;
     width: 100%;
     height: 100%;
+    gap: 5px
   }
 
   &:hover {
@@ -44,7 +45,7 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
 
 .add, .upload {
   width: 150px;
-  height: 150px;
+  height: 190px;
   background: #f0f1f3;
   border-radius: 1em;
   display: flex;
@@ -90,11 +91,24 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
 .empty-data {
   color: #ced4da;
   width: 100%;
-  height: 95vh;
+  height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30px;
+}
+
+.share {
+  height: 25px;
+
+  ::ng-deep .mat-badge-content {
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    font-size: 9px;
+    right: -12px;
+    top: -12px;
+  }
 }
 
 @media (max-width: 750px) {

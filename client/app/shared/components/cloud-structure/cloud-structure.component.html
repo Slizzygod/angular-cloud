@@ -22,6 +22,18 @@
             >
           </div>
           <img [src]="getFolderIcon('folder')" width="100" />
+          <div class="share">
+            <mat-icon
+              [matBadge]="folder.shared.length"
+              *ngIf="folder.owner"
+              color="primary"
+              class="mb-1"
+              [class.hidden]="!folder['isHover']"
+              (click)="onClickShare('folder', folder)"
+            >
+              share_outline
+            </mat-icon>
+          </div>
           <div class="name">
             <mat-icon
               *ngIf="folder.favorite"
@@ -59,6 +71,18 @@
             >
           </div>
           <img [src]="getFileIcon(document.extension)" width="100" />
+          <div class="share">
+            <mat-icon
+              [matBadge]="document.shared.length"
+              *ngIf="document.owner"
+              color="primary"
+              class="mb-1"
+              [class.hidden]="!document['isHover']"
+              (click)="onClickShare('document', document)"
+            >
+              share_outline
+            </mat-icon>
+          </div>
           <div class="name">
             <mat-icon
               *ngIf="document.favorite"

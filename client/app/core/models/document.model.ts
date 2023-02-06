@@ -3,6 +3,7 @@ export interface Document {
   name?: string;
   extension?: string;
   owner?: boolean;
+  shared?: number[];
   root?: boolean;
   folderId?: number;
   favorite?: boolean;

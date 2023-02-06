@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Поделиться</h1>
+
+<div mat-dialog-content>
+  <div class="wrapper">
+    <div class="user" *ngFor="let user of users">
+      <div class="name">
+        <span>{{ user.username }}</span>
+        <span *ngIf="user.firstName && user.lastName">({{ user.lastName }} {{ user.firstName }})</span>
+      </div>
+      <mat-checkbox
+        color="primary"
+        (change)="onChangeUserState($event, user)"
+        [checked]="user['state']"
+      ></mat-checkbox>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Отмена</button>
+  <button
+    mat-button
+    cdkFocusInitial
+    color="primary"
+    (click)="onClickSave()"
+  >
+    Сохранить
+  </button>
+</div>

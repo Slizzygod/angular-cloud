@@ -1,23 +1,26 @@
-import { Document } from "../../../core/models";
+import { Document, DocumentUser } from "../../../core/models";
 
 class DocumentsMapService {
 
-  getDocumentsMap(documents: Document[]): any[] {
+  async getDocumentsMap(documents: Document[], userId: number): Promise<any[]> {
     let documentsMap = [];
 
     if (Array.isArray(documents) && documents.length > 0) {
-      documentsMap = documents.map((document: Document) => this.getDocumentMap(document));
+      const documentUsers = await DocumentUser.findAll({ where: { documentId: documents.map((el: Document) => el.id) } });
+
+      documentsMap = documents.map((document: Document) => this.getDocumentMap(document, documentUsers, userId));
     }
 
     return documentsMap;
   }
 
-  getDocumentMap(document: Document): any {
+  getDocumentMap(document: Document, documentUsers: DocumentUser[], userId: number): any {
     return {
       id: document.id,
       name: document.name,
       extension: document.extension,
-      owner: document.documentsUsers[0].owner,
+      owner: document.documentsUsers.find((el: DocumentUser) => el.userId === userId && el.owner),
+      shared: documentUsers.filter((el: DocumentUser) => !el.owner && el.documentId === document.id).map((el: DocumentUser) => el.userId),
       favorite: !!document.favoritesDocuments[0],
       root: document.root,
       createdAt: document.createdAt,

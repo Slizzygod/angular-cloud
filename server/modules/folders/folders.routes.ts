@@ -10,5 +10,6 @@ export function setFoldersRoutes(router: express.Router) {
   router.route('/folders/:id').delete(foldersCtrl.deleteFolder);
   router.route('/folders/:id/favorite').post(foldersCtrl.setFolderFavorite);
   router.route('/folders/:id/favorite').delete(foldersCtrl.deleteFolderFavorite);
+  router.route('/folders/:id/share').post(foldersCtrl.shareFolder);
 
 }

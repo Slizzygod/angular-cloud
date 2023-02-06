@@ -52,6 +52,10 @@ export class DocumentsService {
     return this.http.delete(`/api/documents/${id}/favorite`);
   }
 
+  shareDocument(id: number, users: number[]): Observable<any> {
+    return this.http.post(`/api/documents/${id}/share`, { users });
+  }
+
 }
 
 export interface DocumentOptions {

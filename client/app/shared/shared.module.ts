@@ -27,7 +27,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { DocumentEditorModule } from "@onlyoffice/document-editor-angular";
 
-import { CloudStructureComponent } from './components';
+import { CloudStructureComponent, ShareComponent } from './components';
 
 @NgModule({
   imports: [
@@ -61,7 +61,8 @@ import { CloudStructureComponent } from './components';
     DocumentEditorModule
   ],
   declarations: [
-    CloudStructureComponent
+    CloudStructureComponent,
+    ShareComponent
   ],
   exports: [
     CommonModule,
@@ -92,6 +93,7 @@ import { CloudStructureComponent } from './components';
     MatTableModule,
     MatSortModule,
     CloudStructureComponent,
+    ShareComponent,
     DocumentEditorModule
   ]
 })

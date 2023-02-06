@@ -1,22 +1,25 @@
-import { Folder } from "../../../core/models";
+import { Folder, FolderUser } from "../../../core/models";
 
 class FoldersMapService {
 
-  getFoldersMap(folders: Folder[]): any[] {
+  async getFoldersMap(folders: Folder[], userId: number): Promise<any[]> {
     let foldersMap = [];
 
     if (Array.isArray(folders) && folders.length > 0) {
-      foldersMap = folders.map((folder: Folder) => this.getFolderMap(folder));
+      const folderUsers = await FolderUser.findAll({ where: { folderId: folders.map((el: Folder) => el.id) } });
+
+      foldersMap = folders.map((folder: Folder) => this.getFolderMap(folder, folderUsers, userId));
     }
 
     return foldersMap;
   }
 
-  getFolderMap(folder: Folder): any {
+  getFolderMap(folder: Folder, folderUsers: FolderUser[], userId: number): any {
     return {
       id: folder.id,
       name: folder.name,
-      owner: folder.foldersUsers[0].owner,
+      owner: folder.foldersUsers.find((el: FolderUser) => el.userId === userId && el.owner),
+      shared: folderUsers.filter((el: FolderUser) => !el.owner && el.folderId === folder.id).map((el: FolderUser) => el.userId),
       favorite: !!folder.favoritesFolders[0],
       parentId: folder.parentId,
       root: folder.root,

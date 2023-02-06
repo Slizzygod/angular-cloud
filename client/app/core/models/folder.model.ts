@@ -5,6 +5,7 @@ export interface Folder {
   parentId?: number;
   root?: boolean;
   owner?: boolean;
+  shared?: number[];
   createdAt?: string;
   updatedAt?: string;
 }
