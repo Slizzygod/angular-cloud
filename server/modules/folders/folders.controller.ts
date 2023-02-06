@@ -1,10 +1,10 @@
-import { Op } from 'sequelize';
 import { logsService } from '../logs/logs.service';
 import { Request, Response } from 'express';
 import { Folder, FolderFavorite, FolderUser } from '../../core/models';
 
 import { usersService } from '../users/users.service';
 import { foldersMapService, foldersService } from './services';
+import { Op } from 'sequelize';
 
 export class FoldersCtrl {
   async getFolders(req: Request, res: Response): Promise<any> {
@@ -16,7 +16,7 @@ export class FoldersCtrl {
 
     let folderCondition: any = { root: true };
     let folderFavoriteCondition: any = { userId: user.id };
-    let folderUserCondition: any = { userId: user.id, owner: { [Op.or]: [false, null] } };
+    let folderUserCondition: any = { userId: user.id };
 
     if (!isNaN(parentId)) {
       folderCondition = { parentId };
@@ -28,7 +28,11 @@ export class FoldersCtrl {
     }
 
     if (owner) {
-      folderUserCondition.owner = true
+      folderUserCondition.owner = true;
+    }
+
+    if (!favorites && !parentId && !owner) {
+      folderUserCondition.owner = { [Op.or]: [false, null] };
     }
 
     try {

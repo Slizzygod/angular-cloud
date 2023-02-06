@@ -16,7 +16,7 @@ export class DocumentsCtrl {
     const user = usersService.getCurrentSessionUser(req);
 
     let documentCondition: any = { root: true };
-    let documentUserCondition: any = { userId: user.id, owner: { [Op.or]: [false, null] } };
+    let documentUserCondition: any = { userId: user.id };
     let documentFavoriteCondition: any = { userId: user.id };
 
     if (!isNaN(folderId)) {
@@ -25,6 +25,10 @@ export class DocumentsCtrl {
 
     if (owner) {
       documentUserCondition.owner = true
+    }
+
+    if (!favorites && !folderId && !owner) {
+      documentUserCondition.owner = { [Op.or]: [false, null] };
     }
 
     if (favorites) {

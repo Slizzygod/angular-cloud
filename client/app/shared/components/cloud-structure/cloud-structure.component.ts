@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Folder, Document } from '@app/core/models';
+import { NotificationService } from '@app/core/services';
+import { DocumentsService, FoldersService } from '@app/shared/services';
 
 import {
   getMaterialFileIcon,
@@ -15,19 +18,8 @@ export class CloudStructureComponent {
 
   @Input() folders: Folder[] = [];
   @Input() documents: Document[] = [];
+  @Input() parent: number = null;
   @Input() disableActions: boolean = false;
-
-  @Output() createDocument: EventEmitter<Document> = new EventEmitter();
-  @Output() dblClickDocument: EventEmitter<Document> = new EventEmitter();
-  @Output() addFavoriteDocument: EventEmitter<Document> = new EventEmitter();
-  @Output() deleteFavoriteDocument: EventEmitter<Document> = new EventEmitter();
-  @Output() deleteDocument: EventEmitter<Document> = new EventEmitter();
-
-  @Output() createFolder: EventEmitter<Folder> = new EventEmitter();
-  @Output() dblClickFolder: EventEmitter<Folder> = new EventEmitter();
-  @Output() addFavoriteFolder: EventEmitter<Folder> = new EventEmitter();
-  @Output() deleteFavoriteFolder: EventEmitter<Folder> = new EventEmitter();
-  @Output() deleteFolder: EventEmitter<Folder> = new EventEmitter();
 
   selectedFolder: Folder = null;
   selectedDocument: Document = null;
@@ -36,15 +28,19 @@ export class CloudStructureComponent {
   getFolderIcon = getMaterialFolderIcon;
   getFileIcon = getMaterialFileIcon;
 
-  constructor() {}
+  constructor(
+    private foldersService: FoldersService,
+    private documentsService: DocumentsService,
+    private notificationService: NotificationService,
+    private router: Router
+  ) {}
 
-  onClickCreateDocument(): void {
-    this.createDocument.emit();
+  getFolderFromList(id: number): Folder {
+    return this.folders.find((el: Folder) => Number(el.id) === Number(id));
   }
 
-
-  onDblClickDocument(document: Document): void {
-    this.dblClickDocument.emit(document);
+  getDocumentFromList(id: number): Document {
+    return this.documents.find((el: Document) => Number(el.id) === Number(id));
   }
 
   onClickDocument(document: Document): void {
@@ -52,53 +48,166 @@ export class CloudStructureComponent {
     this.selectedFolder = null;
   }
 
-  onClickAddFavoriteDocument(event: Event, document: Document): void {
-    event.stopPropagation();
-
-    this.addFavoriteDocument.emit(document);
-  }
-
-  onClickDeleteFavoriteDocument(event: Event, document: Document): void {
-    event.stopPropagation();
-
-    this.deleteFavoriteDocument.emit(document);
-  }
-
-  onClickDeleteDocument(event: Event, document: Document): void {
-    event.stopPropagation();
-
-    this.deleteDocument.emit(document);
-  }
-
-  onClickCreateFolder(): void {
-    this.createFolder.emit();
-  }
-
-  onDblClickFolder(folder: Folder): void {
-    this.dblClickFolder.emit(folder);
-  }
-
   onClickFolder(folder: Folder): void {
     this.selectedFolder = folder;
     this.selectedDocument = null;
   }
 
+  onClickCreateDocument(): void {
+    const document = {
+      name: `Новый файл ${this.documents.length + 1}`,
+      root: !this.parent ? true : false,
+      extension: 'doc',
+      folderId: this.parent
+    };
+
+    this.documentsService.createDocument(document).subscribe({
+      next: (document: Document) => this.onCreatedDocument(document),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onCreatedDocument(document: Document): void {
+    this.documents.push(document);
+
+    this.notificationService.success('Докумень успешно создан');
+  }
+
+  onDblClickDocument(document: Document): void {
+    // this.router.navigate([`cloud/folders/`, folder.id]);
+  }
+
+  onClickAddFavoriteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.documentsService.setDocumentFavorite(document.id).subscribe({
+      next: (document: Document) => this.onAddedFavoriteDocument(document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onAddedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = true;
+    }
+
+    this.notificationService.success('Файл успешно добавлен в избранное');
+  }
+
+  onClickDeleteFavoriteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.documentsService.deleteDocumentFavorite(document.id).subscribe({
+      next: (document: Document) => this.onDeletedFavoriteDocument(document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDeletedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = false;
+    }
+
+    this.notificationService.success('Файл успешно удален из избранного');
+  }
+
+  onClickDeleteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.documentsService.deleteDocument(document.id).subscribe({
+      next: () => this.onDeletedDocument(document),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onDeletedDocument(document: Document): void {
+    this.documents = this.documents.filter((el: Document) => Number(el.id) !== Number(document.id));
+
+    this.notificationService.success('Файл успешно удален');
+  }
+
+  onClickCreateFolder(): void {
+    const folder = {
+      name: `Новая папка ${this.folders.length + 1}`,
+      root: !this.parent ? true : false,
+      parentId: this.parent
+    };
+
+    this.foldersService.createFolder(folder).subscribe({
+      next: (folder: Folder) => this.onCreatedFolder(folder),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onCreatedFolder(folder: Folder): void {
+    this.folders.push(folder);
+
+    this.notificationService.success('Папка успешно создана');
+  }
+
+  onDblClickFolder(folder: Folder): void {
+    this.router.navigate([`cloud/folders/`, folder.id]);
+  }
+
   onClickAddFavoriteFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
-    this.addFavoriteFolder.emit(folder);
+    this.foldersService.setFolderFavorite(folder.id).subscribe({
+      next: (folder: Folder) => this.onAddedFavoriteFolder(folder),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onAddedFavoriteFolder(folder: Folder): void {
+    const needlyFolder = this.getFolderFromList(folder.id);
+
+    if (needlyFolder) {
+      needlyFolder.favorite = true;
+    }
+
+    this.notificationService.success('Папка успешно добавлена в избранное');
   }
 
   onClickDeleteFavoriteFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
-    this.deleteFavoriteFolder.emit(folder);
+    this.foldersService.deleteFolderFavorite(folder.id).subscribe({
+      next: (folder: Folder) => this.onDeletedFavoriteFolder(folder),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDeletedFavoriteFolder(folder: Folder): void {
+    const needlyFolder = this.getFolderFromList(folder.id);
+
+    if (needlyFolder) {
+      needlyFolder.favorite = false;
+    }
+
+    this.notificationService.success('Папка успешно удалена из избранного');
   }
 
   onClickDeleteFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
-    this.deleteFolder.emit(folder);
+    this.foldersService.deleteFolder(folder.id).subscribe({
+      next: () => this.onDeletedFolder(folder),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onDeletedFolder(folder: Folder): void {
+    this.folders = this.folders.filter((el: Folder) => Number(el.id) !== Number(folder.id));
+
+    this.notificationService.success('Папка успешно удалена');
+  }
+
+  onError(error: unknown): void {
+    console.error(error);
   }
 
 }
