@@ -42,7 +42,7 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   }
 }
 
-.add {
+.add, .upload {
   width: 150px;
   height: 150px;
   background: #f0f1f3;
@@ -95,4 +95,10 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   align-items: center;
   justify-content: center;
   font-size: 30px;
+}
+
+@media (max-width: 750px) {
+  .wrapper {
+    justify-content: center;
+  }
 }

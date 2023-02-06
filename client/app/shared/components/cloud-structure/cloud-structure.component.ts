@@ -206,6 +206,10 @@ export class CloudStructureComponent {
     this.notificationService.success('Папка успешно удалена');
   }
 
+  onClickUploadFile(): void {
+
+  }
+
   onError(error: unknown): void {
     console.error(error);
   }

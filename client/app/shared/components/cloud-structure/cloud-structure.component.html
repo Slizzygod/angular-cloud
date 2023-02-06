@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <div *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
+    <div matTooltip="Добавить файл или папку" *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
       <mat-icon color="primary">add</mat-icon>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="onClickCreateDocument()">
@@ -90,6 +90,10 @@
           Создать папку
         </button>
       </mat-menu>
+    </div>
+
+    <div matTooltip="Загрузить файл" *ngIf="!disableActions" class="upload" (click)="onClickUploadFile()">
+      <mat-icon color="primary">upload_file</mat-icon>
     </div>
   </ng-template>
 </div>
