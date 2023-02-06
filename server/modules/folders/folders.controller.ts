@@ -75,9 +75,10 @@ export class FoldersCtrl {
     }
 
     try {
-      const folder = await foldersService.createFolder({ ...folderData, user });
+      const data = await foldersService.createFolder({ ...folderData, user });
+      await FolderUser.create({ userId: user.id, folderId: data.id });
 
-      await FolderUser.create({ userId: user.id, folderId: folder.id });
+      const folder =await foldersService.getFolder(data.id, user.id);
 
       res.send(folder);
     } catch (error) {

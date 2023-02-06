@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { Document, DocumentFavorite, DocumentUser } from '../../core/models';
 import { logsService } from '../logs/logs.service';
 import { usersService } from '../users/users.service';
-import { documentsMapService } from './services';
+import { documentsMapService, documentsService } from './services';
 
 export class DocumentsCtrl {
 
@@ -81,18 +81,18 @@ export class DocumentsCtrl {
     }
 
     try {
-      const document = await Document.create({ ...documentData, userId: user.id });
+      const data = await Document.create({ ...documentData, userId: user.id });
+      await DocumentUser.create({ userId: user.id, documentId: data.id });
 
-      await Promise.all([
-        DocumentUser.create({ userId: user.id, documentId: document.id }),
-        logsService.createLog({
-          alias: 'createDocument',
-          method: 'POST',
-          data: { name, root, folderId },
-          user,
-          document,
-        })
-      ]);
+      const document = await documentsService.getDocument(data.id, user.id)
+
+      await logsService.createLog({
+        alias: 'createDocument',
+        method: 'POST',
+        data: { name, root, folderId },
+        user,
+        document,
+      });
 
       res.send(document);
     } catch (error) {

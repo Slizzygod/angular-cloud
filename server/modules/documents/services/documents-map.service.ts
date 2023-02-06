@@ -8,18 +8,18 @@ class DocumentsMapService {
     if (Array.isArray(documents) && documents.length > 0) {
       const documentUsers = await DocumentUser.findAll({ where: { documentId: documents.map((el: Document) => el.id) } });
 
-      documentsMap = documents.map((document: Document) => this.getDocumentMap(document, documentUsers, userId));
+      documentsMap = documents.map((document: Document) => this.getDocumentMap(document, userId, documentUsers));
     }
 
     return documentsMap;
   }
 
-  getDocumentMap(document: Document, documentUsers: DocumentUser[], userId: number): any {
+  getDocumentMap(document: Document, userId: number, documentUsers: DocumentUser[] = []): any {
     return {
       id: document.id,
       name: document.name,
       extension: document.extension,
-      owner: document.documentsUsers.find((el: DocumentUser) => el.userId === userId && el.owner),
+      owner: !!document.documentsUsers.find((el: DocumentUser) => el.userId === userId && el.owner),
       shared: documentUsers.filter((el: DocumentUser) => !el.owner && el.documentId === document.id).map((el: DocumentUser) => el.userId),
       favorite: !!document.favoritesDocuments[0],
       root: document.root,

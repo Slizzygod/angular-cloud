@@ -1,7 +1,31 @@
 import { logsService } from '../../logs/logs.service';
-import { Folder, User } from './../../../core/models';
+import { Folder, FolderFavorite, FolderUser, User } from './../../../core/models';
+import { foldersMapService } from './folders-map.service';
 
 class FoldersService {
+
+  async getFolder(id: number, userId: number): Promise<any> {
+    const folder = await Folder.findOne({
+      where: { id },
+      include: [
+        {
+          model: FolderUser,
+          as: 'foldersUsers',
+          separate: true
+        },
+        {
+          model: FolderFavorite,
+          as: 'favoritesFolders',
+          separate: true
+        }
+      ]
+    });
+
+    const folderMap = await foldersMapService.getFolderMap(folder, userId);
+
+    return folderMap;
+  }
+
   async createFolder(data: ActionsFolderOptions): Promise<Folder> {
     const { name, root, parentId, user, group } = data;
 
@@ -39,6 +63,7 @@ class FoldersService {
 
     return result[1][0].id;
   }
+
 }
 
 interface ActionsFolderOptions {
