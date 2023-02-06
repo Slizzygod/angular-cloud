@@ -25,6 +25,7 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { DocumentEditorModule } from "@onlyoffice/document-editor-angular";
 
 import { CloudStructureComponent } from './components';
 
@@ -56,7 +57,8 @@ import { CloudStructureComponent } from './components';
     MatTreeModule,
     MatBadgeModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    DocumentEditorModule
   ],
   declarations: [
     CloudStructureComponent
@@ -89,7 +91,8 @@ import { CloudStructureComponent } from './components';
     MatBadgeModule,
     MatTableModule,
     MatSortModule,
-    CloudStructureComponent
+    CloudStructureComponent,
+    DocumentEditorModule
   ]
 })
 

@@ -5,3 +5,6 @@ export * from './folder';
 export * from './folder-user';
 export * from './log';
 export * from './folder-favorite'
+export * from './document';
+export * from './document-user';
+export * from './document-favorite';

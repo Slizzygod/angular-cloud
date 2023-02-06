@@ -1,4 +1,4 @@
-import { Folder, FolderFavorite } from "../../../core/models";
+import { Folder } from "../../../core/models";
 
 class FoldersMapService {
 
@@ -17,7 +17,7 @@ class FoldersMapService {
       id: folder.id,
       name: folder.name,
       owner: folder.foldersUsers[0].owner,
-      favorite: !!folder.favoritesFolders.find((el: FolderFavorite) => folder.id === el.folderId),
+      favorite: !!folder.favoritesFolders[0],
       parentId: folder.parentId,
       root: folder.root,
       createdAt: folder.createdAt,

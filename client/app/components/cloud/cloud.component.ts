@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
-import { Folder } from '@app/core/models';
+import { Folder, Document } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { forkJoin, Subscription } from 'rxjs';
-import { FoldersService } from '../../shared/services';
+import { FoldersService, DocumentsService } from '../../shared/services';
 
 @Component({
   selector: 'app-cloud',
@@ -15,12 +15,14 @@ export class CloudComponent implements OnInit {
   private subscriptions = new Subscription();
 
   folders: Folder[] = [];
+  documents: Document[] = [];
   parent: number = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private foldersService: FoldersService,
+    private documentService: DocumentsService,
     private notificationService: NotificationService
   ) { }
 
@@ -34,7 +36,11 @@ export class CloudComponent implements OnInit {
   }
 
   getFolderFromList(id: number): Folder {
-    return this.folders.find((el: Folder) => Number(el.id ) === Number(id));
+    return this.folders.find((el: Folder) => Number(el.id) === Number(id));
+  }
+
+  getDocumentFromList(id: number): Document {
+    return this.documents.find((el: Document) => Number(el.id) === Number(id));
   }
 
   onParamsLoaded(params: Params): void {
@@ -45,15 +51,88 @@ export class CloudComponent implements OnInit {
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders({ parentId: this.parent, owner: !this.parent && true })
+      folders: this.foldersService.getFolders({ parentId: this.parent, owner: !this.parent && true }),
+      documents: this.documentService.getDocuments({ owner: true, folderId: this.parent })
     }).subscribe({
-      next: ({ folders }) => this.onDataLoaded(folders),
+      next: ({ folders, documents }) => this.onDataLoaded(folders, documents),
       error: (error: unknown) => this.onError(error)
     })
   }
 
-  onDataLoaded(folders: Folder[]): void {
+  onDataLoaded(folders: Folder[], documents: Document[]): void {
     this.folders = folders;
+    this.documents = documents;
+  }
+
+  onCreateDocument(): void {
+    const document = {
+      name: `Новый файл ${this.documents.length + 1}`,
+      root: !this.parent ? true : false,
+      extension: 'doc',
+      folderId: this.parent
+    };
+
+    this.documentService.createDocument(document).subscribe({
+      next: (document: Document) => this.onCreatedDocument(document),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onCreatedDocument(document: Document): void {
+    this.documents.push(document);
+
+    this.notificationService.success('Докумень успешно создан');
+  }
+
+  onDblClickDocument(document: Document): void {
+    // this.router.navigate([`cloud/folders/`, folder.id]);
+  }
+
+  onAddFavoriteDocument(document: Document): void {
+    this.documentService.setDocumentFavorite(document.id).subscribe({
+      next: (document: Document) => this.onAddedFavoriteDocument(document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onAddedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = true;
+    }
+
+    this.notificationService.success('Файл успешно добавлен в избранное');
+  }
+
+  onDeleteFavoriteDocument(document: Document): void {
+    this.documentService.deleteDocumentFavorite(document.id).subscribe({
+      next: (document: Document) => this.onDeletedFavoriteDocument(document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDeletedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = false;
+    }
+
+    this.notificationService.success('Файл успешно удален из избранного');
+  }
+
+  onDeleteDocument(document: Document): void {
+    this.documentService.deleteDocument(document.id).subscribe({
+      next: () => this.onDeletedDocument(document),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onDeletedDocument(document: Document): void {
+    this.documents = this.documents.filter((el: Document) => Number(el.id) !== Number(document.id));
+
+    this.notificationService.success('Файл успешно удален');
   }
 
   onCreateFolder(): void {
@@ -73,10 +152,6 @@ export class CloudComponent implements OnInit {
     this.folders.push(folder);
 
     this.notificationService.success('Папка успешно создана');
-  }
-
-  onCreateDocument(): void {
-
   }
 
   onDblClickFolder(folder: Folder): void {

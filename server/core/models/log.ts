@@ -1,8 +1,9 @@
 import { DataTypes, Model } from "sequelize";
-import { Folder } from "./folder";
 
 import { models } from "./sequelize";
 import { User } from "./user";
+import { Document } from "./document";
+import { Folder } from "./folder";
 
 export class Log extends Model {
   public id!: number;
@@ -12,10 +13,11 @@ export class Log extends Model {
 
   public alias!: string;
   public method!: string;
-  public userId!: number;
   public data: any;
   public folderId: number;
-  public documentId: number;
+  public userId: User;
+  public folder: Folder;
+  public document: Document;
 }
 
 Log.init({
@@ -35,20 +37,16 @@ Log.init({
   data: {
     type: DataTypes.JSON,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
+  user: {
+    type: DataTypes.JSON,
   },
-  folderId: {
-    type: DataTypes.INTEGER
+  folder: {
+    type: DataTypes.JSON,
   },
-  documentId: {
-    type: DataTypes.INTEGER
-  }
+  document: {
+    type: DataTypes.JSON,
+  },
 }, {
   sequelize: models.sequelize,
   modelName: 'logs'
 });
-
-Log.belongsTo(User, { as: 'user', foreignKey: 'userId' });
-Log.belongsTo(Folder, { as: 'folder', foreignKey: 'folderId' });

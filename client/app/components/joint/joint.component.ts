@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Folder } from '@app/core/models';
+import { Folder, Document } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
-import { FoldersService } from '@app/shared/services';
+import { DocumentsService, FoldersService } from '@app/shared/services';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -13,15 +13,21 @@ import { forkJoin } from 'rxjs';
 export class JointComponent {
 
   folders: Folder[] = [];
+  documents: Document[] = [];
 
   constructor(
     private router: Router,
     private foldersService: FoldersService,
+    private documentsService: DocumentsService,
     private notificationService: NotificationService
   ) { }
 
   getFolderFromList(id: number): Folder {
     return this.folders.find((el: Folder) => Number(el.id ) === Number(id));
+  }
+
+  getDocumentFromList(id: number): Folder {
+    return this.documents.find((el: Document) => Number(el.id ) === Number(id));
   }
 
   ngOnInit(): void {
@@ -30,11 +36,68 @@ export class JointComponent {
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders()
+      folders: this.foldersService.getFolders(),
+      documents: this.documentsService.getDocuments()
     }).subscribe({
-      next: ({ folders }) => this.onDataLoaded(folders),
+      next: ({ folders, documents }) => this.onDataLoaded(folders, documents),
       error: (error: unknown) => this.onError(error)
     })
+  }
+
+  onDataLoaded(folders: Folder[], documents: Document[]): void {
+    this.folders = folders;
+    this.documents = documents;
+  }
+
+  onDblClickDocument(document: Document): void {
+    // this.router.navigate([`cloud/folders/`, document.id]);
+  }
+
+  onAddFavoriteDocument(document: Document): void {
+    this.documentsService.setDocumentFavorite(document.id).subscribe({
+      next: (folder: Folder) => this.onAddedFavoriteDocument(folder),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onAddedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = true;
+    }
+
+    this.notificationService.success('Файл успешно добавлен в избранное');
+  }
+
+  onDeleteFavoriteDocument(document: Document): void {
+    this.documentsService.deleteDocumentFavorite(document.id).subscribe({
+      next: (document: Document) => this.onDeletedFavoriteDocument(document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDeletedFavoriteDocument(document: Document): void {
+    const needlyDocument = this.getDocumentFromList(document.id);
+
+    if (needlyDocument) {
+      needlyDocument.favorite = false;
+    }
+
+    this.notificationService.success('Документ успешно удален из избранного');
+  }
+
+  onDeleteDocument(document: Document): void {
+    this.documentsService.deleteDocument(document.id).subscribe({
+      next: () => this.onDeletedDocument(document),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onDeletedDocument(document: Document): void {
+    this.documents = this.documents.filter((el: Document) => Number(el.id) !== Number(document.id));
+
+    this.notificationService.success('Документ успешно удален');
   }
 
   onDblClickFolder(folder: Folder): void {
@@ -73,10 +136,6 @@ export class JointComponent {
     }
 
     this.notificationService.success('Папка успешно удалена из избранного');
-  }
-
-  onDataLoaded(folders: Folder[]): void {
-    this.folders = folders;
   }
 
   onDeleteFolder(folder: Folder): void {

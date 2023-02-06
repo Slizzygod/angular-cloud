@@ -6,12 +6,12 @@
   <ng-template #ready>
     <div (mouseover)="folder['isHover'] = true" (mouseout)="folder['isHover'] = false" *ngFor="let folder of folders">
       <div
-        class="folder"
+        class="entity"
         [class.selected]="selectedFolder && selectedFolder.id === folder.id"
         (click)="onClickFolder(folder)"
         (dblclick)="onDblClickFolder(folder)"
       >
-        <div class="folder-content">
+        <div class="entity-content">
           <div class="delete">
             <mat-icon
               *ngIf="folder.owner"
@@ -35,7 +35,46 @@
               color="primary"
               >favorite_outline</mat-icon
             >
-            <span>{{ folder.name }}</span>
+            <span [matTooltip]="folder.name">{{ folder.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div (mouseover)="document['isHover'] = true" (mouseout)="document['isHover'] = false" *ngFor="let document of documents">
+      <div
+        class="entity"
+        [class.selected]="selectedDocument && selectedDocument.id === document.id"
+        (click)="onClickDocument(document)"
+        (dblclick)="onDblClickDocument(document)"
+      >
+        <div class="entity-content">
+          <div class="delete">
+            <mat-icon
+              *ngIf="document.owner"
+              [class.hidden]="!document['isHover']"
+              (click)="onClickDeleteDocument($event, document)"
+              color="primary"
+              >clear</mat-icon
+            >
+          </div>
+          <img [src]="getFileIcon(document.extension)" width="100" />
+          <div class="name">
+            <mat-icon
+              *ngIf="document.favorite"
+              (click)="onClickDeleteFavoriteDocument($event, document)"
+              color="primary"
+              >favorite</mat-icon
+            >
+            <mat-icon
+              *ngIf="!document.favorite"
+              (click)="onClickAddFavoriteDocument($event, document)"
+              color="primary"
+              >favorite_outline</mat-icon
+            >
+            <span matTooltip="{{ document.name }}.{{ document.extension }}">
+              {{ document.name }}.{{ document.extension }}
+            </span>
           </div>
         </div>
       </div>

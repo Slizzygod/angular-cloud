@@ -1,7 +1,14 @@
 <div class="wrapper">
   <app-cloud-structure
     [folders]="folders"
+    [documents]="documents"
+
     (createDocument)="onCreateDocument()"
+    (dblClickDocument)="onDblClickDocument($event)"
+    (addFavoriteDocument)="onAddFavoriteDocument($event)"
+    (deleteFavoriteDocument)="onDeleteFavoriteDocument($event)"
+    (deleteDocument)="onDeleteDocument($event)"
+
     (createFolder)="onCreateFolder()"
     (dblClickFolder)="onDblClickFolder($event)"
     (addFavoriteFolder)="onAddFavoriteFolder($event)"

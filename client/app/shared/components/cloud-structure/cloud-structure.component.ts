@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Folder } from '@app/core/models';
+import { Folder, Document } from '@app/core/models';
 
 import {
   getMaterialFileIcon,
@@ -14,9 +14,15 @@ import {
 export class CloudStructureComponent {
 
   @Input() folders: Folder[] = [];
+  @Input() documents: Document[] = [];
   @Input() disableActions: boolean = false;
 
-  @Output() createDocument: EventEmitter<Folder> = new EventEmitter();
+  @Output() createDocument: EventEmitter<Document> = new EventEmitter();
+  @Output() dblClickDocument: EventEmitter<Document> = new EventEmitter();
+  @Output() addFavoriteDocument: EventEmitter<Document> = new EventEmitter();
+  @Output() deleteFavoriteDocument: EventEmitter<Document> = new EventEmitter();
+  @Output() deleteDocument: EventEmitter<Document> = new EventEmitter();
+
   @Output() createFolder: EventEmitter<Folder> = new EventEmitter();
   @Output() dblClickFolder: EventEmitter<Folder> = new EventEmitter();
   @Output() addFavoriteFolder: EventEmitter<Folder> = new EventEmitter();
@@ -24,6 +30,7 @@ export class CloudStructureComponent {
   @Output() deleteFolder: EventEmitter<Folder> = new EventEmitter();
 
   selectedFolder: Folder = null;
+  selectedDocument: Document = null;
   isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
@@ -33,6 +40,34 @@ export class CloudStructureComponent {
 
   onClickCreateDocument(): void {
     this.createDocument.emit();
+  }
+
+
+  onDblClickDocument(document: Document): void {
+    this.dblClickDocument.emit(document);
+  }
+
+  onClickDocument(document: Document): void {
+    this.selectedDocument = document;
+    this.selectedFolder = null;
+  }
+
+  onClickAddFavoriteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.addFavoriteDocument.emit(document);
+  }
+
+  onClickDeleteFavoriteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.deleteFavoriteDocument.emit(document);
+  }
+
+  onClickDeleteDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.deleteDocument.emit(document);
   }
 
   onClickCreateFolder(): void {
@@ -45,6 +80,7 @@ export class CloudStructureComponent {
 
   onClickFolder(folder: Folder): void {
     this.selectedFolder = folder;
+    this.selectedDocument = null;
   }
 
   onClickAddFavoriteFolder(event: Event, folder: Folder): void {

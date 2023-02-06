@@ -1,9 +1,9 @@
 import { logsService } from '../../logs/logs.service';
-import { Folder } from './../../../core/models';
+import { Folder, User } from './../../../core/models';
 
 class FoldersService {
   async createFolder(data: ActionsFolderOptions): Promise<Folder> {
-    const { name, root, parentId, userId, group } = data;
+    const { name, root, parentId, user, group } = data;
 
     const folder = await Folder.create({ name, root, parentId: parentId || null, group: group || null });
 
@@ -11,15 +11,15 @@ class FoldersService {
       alias: 'createFolder',
       method: 'POST',
       data: { name, root },
-      userId,
-      folderId: folder.id,
+      user,
+      folder,
     });
 
     return folder;
   }
 
   async updateFolder(data: ActionsFolderOptions): Promise<number> {
-    const { id, name, userId, group } = data;
+    const { id, name, user, group } = data;
 
     let condition: any = { id };
 
@@ -30,11 +30,11 @@ class FoldersService {
     const result = await Folder.update({ name }, { where: condition, returning: true });
 
     await logsService.createLog({
-      alias: 'createFolder',
-      method: 'POST',
+      alias: 'updateFolder',
+      method: 'PUT',
       data: { name },
-      userId,
-      folderId: result[1][0].id,
+      user,
+      folder: result[1][0],
     });
 
     return result[1][0].id;
@@ -43,7 +43,7 @@ class FoldersService {
 
 interface ActionsFolderOptions {
   id?: number
-  userId?: number;
+  user?: User;
   name?: string;
   root?: boolean;
   parentId?: number;

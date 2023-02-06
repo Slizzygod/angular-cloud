@@ -36,7 +36,7 @@ export class GroupsCtrl {
     try {
       const group = await Group.create({ name, shortName, note });
 
-      const folder = await foldersService.createFolder({ name, root: true, userId: user.id, group: group.id });
+      const folder = await foldersService.createFolder({ name, root: true, user, group: group.id });
 
       await FolderUser.create({ userId: user.id, folderId: folder.id, owner: true });
 
@@ -65,7 +65,7 @@ export class GroupsCtrl {
         return res.status(404).send('Group not found');
       }
 
-      const folderId = await foldersService.updateFolder({ group: id, name, userId: user.id });
+      const folderId = await foldersService.updateFolder({ group: id, name, user });
 
       await Promise.all([
         users.length > 0
