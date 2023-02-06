@@ -32,11 +32,6 @@ export class AppComponent {
           note: 'Избранное'
         },
         {
-          link: 'upload',
-          icon: 'cloud_upload',
-          note: 'Загрузить файлы'
-        },
-        {
           link: 'users',
           icon: 'group',
           permissions: [PERMISSION_ADMIN],

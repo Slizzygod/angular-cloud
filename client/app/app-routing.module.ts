@@ -43,15 +43,6 @@ const routes: Routes = [
   },
   {
     canActivate: [AuthGuardService],
-    path: 'upload',
-    loadChildren: () =>
-      import('./components/upload/upload.module').then((m) => m.UploadModule),
-    data: {
-      title: 'Загрузка',
-    },
-  },
-  {
-    canActivate: [AuthGuardService],
     path: 'settings',
     loadChildren: () =>
       import('./components/settings/settings.module').then(
