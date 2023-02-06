@@ -1,3 +1,11 @@
 .wrapper {
   padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+
+.info {
+  color: #ced4da;
 }

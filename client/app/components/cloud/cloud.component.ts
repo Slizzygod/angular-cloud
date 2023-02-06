@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Folder, Document } from '@app/core/models';
 import { forkJoin, Subscription } from 'rxjs';
-import { FoldersService, DocumentsService } from '../../shared/services';
+import { FoldersService, DocumentsService, utilsService } from '../../shared/services';
 
 @Component({
   selector: 'app-cloud',
@@ -22,6 +22,13 @@ export class CloudComponent implements OnInit {
     private foldersService: FoldersService,
     private documentService: DocumentsService,
   ) { }
+
+  getInfo(): string {
+    const folders = utilsService.getQuantitativeDeclinationString(this.folders.length, ['папка', 'папки', 'папок']);
+    const document = utilsService.getQuantitativeDeclinationString(this.documents.length, ['документ', 'документа', 'документов']);
+
+    return `${folders}, ${document}`;
+  }
 
   ngOnInit(): void {
     this.subscriptions.add(
