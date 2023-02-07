@@ -1,43 +1,13 @@
 import * as fsPromises from 'fs/promises';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as fsFinder from 'fs-finder';
 
-import { config } from '../../../core/config/config';
-
-import { DocumentFavorite, DocumentUser, Document, User, Folder, FolderUser } from "../../../core/models";
+import { DocumentFavorite, DocumentUser, Document, User } from "../../../core/models";
 import { logsService } from '../../logs/logs.service';
 import { documentsMapService } from "./documents-map.service";
+import { foldersService } from '../../folders/services';
 
 class DocumentsService {
-
-  async getFolderPath(user: User, folderId: number): Promise<string> {
-    let folderPath = `${config.rootDir}/${user.username}`;
-
-    if (folderId) {
-      const folderUser = await FolderUser.findOne({
-        where: { folderId, owner: true },
-        include: [
-          {
-            model: Folder,
-            as: 'folder',
-            attributes: ['name', 'id']
-          },
-          {
-            model: User,
-            as: 'user',
-            attributes: ['username']
-          }
-        ]
-      });
-
-      folderPath = fsFinder
-        .from(`${config.rootDir}/${folderUser.user.username}`)
-        .findDirectories(`${folderUser.folder.name}_${folderUser.folder.id}`)[0];
-    }
-
-    return folderPath;
-  }
 
   async getDocument(id: number, userId: number): Promise<any> {
     const document = await Document.findOne({
@@ -62,7 +32,7 @@ class DocumentsService {
   }
 
   async deleteDocument(id: number, parent: number, user: User): Promise<any> {
-    const folderPath = await this.getFolderPath(user, parent);
+    const folderPath = await foldersService.getFolderPath(user, parent);
     const document = await Document.findOne({ where: { id } });
 
     await Promise.all([
@@ -78,7 +48,7 @@ class DocumentsService {
   }
 
   async createDocument(name: string, root: boolean, folderId: number, extension: string, user: User): Promise<any> {
-    const folderPath = await this.getFolderPath(user, folderId);
+    const folderPath = await foldersService.getFolderPath(user, folderId);
 
     const data = await Document.create({ name, root, folderId, extension, userId: user.id });
 
@@ -99,7 +69,7 @@ class DocumentsService {
   }
 
   async saveDocument(data: Buffer, name: string, parent: number, user: User): Promise<any> {
-    const folderPath = await this.getFolderPath(user, parent);
+    const folderPath = await foldersService.getFolderPath(user, parent);
 
     await fsPromises.writeFile(`${folderPath}/${name}`, data);
 
@@ -110,7 +80,7 @@ class DocumentsService {
       folderId: parent || null,
       name: parsedName,
       extension: parsedExtension,
-      root: parent ? true : false
+      root: parent ? false : true
     });
 
     await DocumentUser.create({ documentId: createdDocument.id, userId: user.id, owner: true });

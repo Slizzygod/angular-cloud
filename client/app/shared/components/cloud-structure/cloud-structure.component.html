@@ -12,15 +12,25 @@
         (dblclick)="onDblClickFolder(folder)"
       >
         <div class="entity-content">
-          <div class="delete">
-            <mat-icon
-              *ngIf="folder.owner"
-              [class.hidden]="!folder['isHover']"
-              (click)="onClickDeleteFolder($event, folder)"
-              color="primary"
-              >clear</mat-icon
-            >
+          <div class="actions" [class.hidden]="!folder['isHover']">
+            <div class="download">
+              <mat-icon
+                (click)="onClickDownloadFolder($event, folder)"
+                color="primary"
+                >download</mat-icon
+              >
+            </div>
+
+            <div class="delete">
+              <mat-icon
+                *ngIf="folder.owner"
+                (click)="onClickDeleteFolder($event, folder)"
+                color="primary"
+                >clear</mat-icon
+              >
+            </div>
           </div>
+
           <img [src]="getFolderIcon('folder')" width="100" />
           <div class="share">
             <mat-icon
@@ -61,14 +71,23 @@
         (dblclick)="onDblClickDocument(document)"
       >
         <div class="entity-content">
-          <div class="delete">
-            <mat-icon
-              *ngIf="document.owner"
-              [class.hidden]="!document['isHover']"
-              (click)="onClickDeleteDocument($event, document)"
-              color="primary"
-              >clear</mat-icon
-            >
+          <div class="actions" [class.hidden]="!document['isHover']">
+            <div class="download">
+              <mat-icon
+                (click)="onClickDownloadDocument($event, document)"
+                color="primary"
+                >download</mat-icon
+              >
+            </div>
+
+            <div class="delete">
+              <mat-icon
+                *ngIf="document.owner"
+                (click)="onClickDeleteDocument($event, document)"
+                color="primary"
+                >clear</mat-icon
+              >
+            </div>
           </div>
           <img [src]="getFileIcon(document.extension)" width="100" />
           <div class="share">

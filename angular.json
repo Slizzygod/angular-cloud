@@ -37,6 +37,7 @@
             "allowedCommonJsDependencies": [
               "rxjs",
               "crypto-js",
+              "file-saver",
               "file-extension-icon-js"
             ]
           },

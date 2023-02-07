@@ -1,4 +1,5 @@
-import { logsService } from '../logs/logs.service';
+import * as archiver from 'archiver';
+
 import { Request, Response } from 'express';
 import { Folder, FolderFavorite, FolderUser } from '../../core/models';
 
@@ -161,6 +162,30 @@ export class FoldersCtrl {
       }
 
       res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async downloadFolder(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const parent = Number(req.query['parent']);
+    const id = Number(req.params['id']);
+
+    try {
+      const folderPath = await foldersService.getFolderPath(user, parent);
+      const folder = await foldersService.getFolder(id, user.id);
+
+      if (!folder.shared.includes(user.id) && !folder.owner) {
+        return res.status(403).send('Not permitted to download');
+      }
+
+      const archive = archiver('zip').directory(folderPath, false);
+
+      res.setHeader("Content-Disposition", "attachment;");
+      res.set('Content-Type', 'application/zip');
+      archive.pipe(res);
+      archive.finalize();
     } catch (error) {
       res.status(500).send(error.message);
     }

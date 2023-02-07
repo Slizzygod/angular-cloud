@@ -10,6 +10,34 @@ import { foldersMapService } from './folders-map.service';
 
 class FoldersService {
 
+  async getFolderPath(user: User, folderId: number): Promise<string> {
+    let folderPath = `${config.rootDir}/${user.username}`;
+
+    if (folderId) {
+      const folderUser = await FolderUser.findOne({
+        where: { folderId, owner: true },
+        include: [
+          {
+            model: Folder,
+            as: 'folder',
+            attributes: ['name', 'id']
+          },
+          {
+            model: User,
+            as: 'user',
+            attributes: ['username']
+          }
+        ]
+      });
+
+      folderPath = fsFinder
+        .from(`${config.rootDir}/${folderUser.user.username}`)
+        .findDirectories(`${folderUser.folder.name}_${folderUser.folder.id}`)[0];
+    }
+
+    return folderPath;
+  }
+
   async getFolder(id: number, userId: number): Promise<any> {
     const folder = await Folder.findOne({
       where: { id },

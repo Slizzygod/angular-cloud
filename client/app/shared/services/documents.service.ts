@@ -72,6 +72,16 @@ export class DocumentsService {
     return this.http.post(`/api/documents/upload`, document, { params });
   }
 
+  downloadDocument(id: number, parent: number): Observable<any> {
+    const params: any = {};
+
+    if (parent) {
+      params.parent = parent
+    }
+
+    return this.http.get(`/api/documents/${id}/download`, { responseType: 'blob' });
+  }
+
 }
 
 export interface DocumentOptions {

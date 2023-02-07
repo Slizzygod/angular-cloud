@@ -83,12 +83,16 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   }
 }
 
-.delete {
+.actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
   padding: 0.2em 0.5em 0 0;
+  gap: 0.5em;
+}
+
+.delete, .download {
   height: 15px;
 }
 

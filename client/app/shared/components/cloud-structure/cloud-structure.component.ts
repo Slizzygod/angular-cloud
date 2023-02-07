@@ -1,3 +1,5 @@
+import { saveAs } from 'file-saver';
+
 import { Component, Input, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -269,6 +271,34 @@ export class CloudStructureComponent implements OnDestroy {
     this.documents.push(document);
 
     this.notificationService.success('Документ успешно загружен');
+  }
+
+  onClickDownloadFolder(event: Event, folder: Folder): void {
+    event.stopPropagation();
+
+    this.foldersService.downloadFolder(folder.id, this.parent).subscribe({
+      next: (data: Blob) => this.onDownloadedFolder(data, folder),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDownloadedFolder(data: Blob, folder: Folder): void {
+    saveAs(data, folder.name);
+    this.notificationService.success('Архив успешно скачан');
+  }
+
+  onClickDownloadDocument(event: Event, document: Document): void {
+    event.stopPropagation();
+
+    this.documentsService.downloadDocument(document.id, this.parent).subscribe({
+      next: (data: Blob) => this.onDownloadedDocument(data, document),
+      error: (error: unknown) => this.onError(error)
+    });
+  }
+
+  onDownloadedDocument(data: Blob, document: Document): void {
+    saveAs(data, document.name);
+    this.notificationService.success('Документ успешно скачан');
   }
 
   onError(error: unknown): void {

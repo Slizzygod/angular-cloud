@@ -1,10 +1,13 @@
+import * as fs from 'fs';
+import * as mime from 'mime-types';
+
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 
 import { Document, DocumentFavorite, DocumentUser } from '../../core/models';
-import { logsService } from '../logs/logs.service';
 import { usersService } from '../users/users.service';
 import { documentsMapService, documentsService } from './services';
+import { foldersService } from '../folders/services';
 
 export class DocumentsCtrl {
 
@@ -180,8 +183,30 @@ export class DocumentsCtrl {
 
       res.json(folder)
     } catch (error) {
-      console.log(error);
+      res.status(500).send(error.message);
+    }
+  }
 
+  async downloadDocument(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const parent = Number(req.query['parent']);
+    const id = Number(req.params['id']);
+
+    try {
+      const folderPath = await foldersService.getFolderPath(user, parent);
+      const document = await documentsService.getDocument(id, user.id);
+
+      if (!document.shared.includes(user.id) && !document.owner) {
+        return res.status(403).send('Not permitted to download');
+      }
+
+      const rs = fs.createReadStream(`${folderPath}/${document.name}.${document.extension}`);
+
+      res.setHeader("Content-Disposition", "attachment;");
+      res.set('Content-Type', mime.lookup(document.extension));
+
+      rs.pipe(res);
+    } catch (error) {
       res.status(500).send(error.message);
     }
   }
