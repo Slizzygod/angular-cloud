@@ -25,8 +25,9 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { QuillModule } from 'ngx-quill'
 
-import { CloudStructureComponent, ShareComponent } from './components';
+import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from './components';
 
 @NgModule({
   imports: [
@@ -56,10 +57,12 @@ import { CloudStructureComponent, ShareComponent } from './components';
     MatTreeModule,
     MatBadgeModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    QuillModule
   ],
   declarations: [
     CloudStructureComponent,
+    DocumentEditorComponent,
     ShareComponent
   ],
   exports: [
@@ -91,7 +94,9 @@ import { CloudStructureComponent, ShareComponent } from './components';
     MatTableModule,
     MatSortModule,
     CloudStructureComponent,
-    ShareComponent
+    DocumentEditorComponent,
+    ShareComponent,
+    QuillModule
   ]
 })
 

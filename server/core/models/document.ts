@@ -15,7 +15,7 @@ export class Document extends Model {
   public folderId: number;
 
   public favoritesDocuments?: DocumentFavorite[];
-  public documentsUsers?: DocumentUser[]
+  public documentsUsers?: DocumentUser[];
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;

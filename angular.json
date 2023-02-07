@@ -38,7 +38,9 @@
               "rxjs",
               "crypto-js",
               "file-saver",
-              "file-extension-icon-js"
+              "quill",
+              "file-extension-icon-js",
+              "simple-peer/simplepeer.min.js"
             ]
           },
           "configurations": {

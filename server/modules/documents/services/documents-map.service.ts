@@ -23,6 +23,7 @@ class DocumentsMapService {
       shared: documentUsers.filter((el: DocumentUser) => !el.owner && el.documentId === document.id).map((el: DocumentUser) => el.userId),
       favorite: !!document.favoritesDocuments[0],
       root: document.root,
+      documentsUsers: document.documentsUsers || [],
       createdAt: document.createdAt,
       updatedAt: document.updatedAt
     };

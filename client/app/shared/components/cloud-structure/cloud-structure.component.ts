@@ -1,8 +1,3 @@
-// проверить корректное изменения директории для группы на бэке
-// перевести названия файлов на хэш
-// сделать контроль загружаемой инфы
-// сделать schedule
-
 import { saveAs } from 'file-saver';
 
 import { Component, Input, OnDestroy } from '@angular/core';
@@ -13,6 +8,7 @@ import { Folder, Document } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { DocumentsService, FoldersService } from '@app/shared/services';
 import { ShareComponent } from '../share/share.component';
+import { DocumentEditorComponent } from './../document-editor/document-editor.component';
 
 import {
   getMaterialFileIcon,
@@ -87,7 +83,12 @@ export class CloudStructureComponent implements OnDestroy {
   }
 
   onDblClickDocument(document: Document): void {
-    // this.router.navigate([`cloud/folders/`, folder.id]);
+    const dialogRef = this.dialog.open(DocumentEditorComponent, {
+      data: { document, parent: this.parent },
+      width: '80vh',
+      minHeight: 'auto',
+      disableClose: true
+    });
   }
 
   onClickAddFavoriteDocument(event: Event, document: Document): void {

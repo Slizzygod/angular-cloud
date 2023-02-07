@@ -12,6 +12,26 @@ export class DocumentsService {
 
   constructor(private http: HttpClient) {}
 
+  getDocument(id: number, parent: number): Observable<any> {
+    const params: any = {};
+
+    if (parent) {
+      params.parent = parent
+    }
+
+    return this.http.get(`/api/documents/${id}`, { params });
+  }
+
+  saveDocument(id: number, parent: number, text: string): Observable<any> {
+    const params: any = {};
+
+    if (parent) {
+      params.parent = parent
+    }
+
+    return this.http.post(`/api/documents/${id}`, { text }, { params });
+  }
+
   getDocuments(data: DocumentOptions = {}): Observable<any> {
     const { folderId, favorites, owner } = data;
 

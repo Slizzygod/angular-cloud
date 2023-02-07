@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
 import * as mime from 'mime-types';
 
 import { Request, Response } from 'express';
@@ -10,6 +11,45 @@ import { documentsMapService, documentsService } from './services';
 import { foldersService } from '../folders/services';
 
 export class DocumentsCtrl {
+
+  async getDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params['id']);
+    const folderId = Number(req.query['folderId']);
+
+    const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const document = await documentsService.getDocument(id, user.id);
+      const owner = document.documentsUsers.find((el: DocumentUser) => el.owner);
+      const folderPath = await foldersService.getFolderPath(owner.user, folderId);
+      const data = await fsPromises.readFile(`${folderPath}/${document.name}.${document.extension}`);
+
+      res.json(data.toString());
+    } catch (error) {
+      console.log(error)
+      res.status(500).send(error.message);
+    }
+  }
+
+  async saveDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params['id']);
+    const folderId = Number(req.query['folderId']);
+    const text = req.body.text;
+
+    const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const document = await documentsService.getDocument(id, user.id);
+      const owner = document.documentsUsers.find((el: DocumentUser) => el.owner);
+      const folderPath = await foldersService.getFolderPath(owner.user, folderId);
+      const data = await fsPromises.writeFile(`${folderPath}/${document.name}.${document.extension}`, text);
+
+      res.json({ id });
+    } catch (error) {
+      console.log(error)
+      res.status(500).send(error.message);
+    }
+  }
 
   async getDocuments(req: Request, res: Response): Promise<any> {
     const owner = Boolean(req.query['owner']);

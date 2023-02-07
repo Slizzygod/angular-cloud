@@ -16,7 +16,14 @@ class DocumentsService {
         {
           model: DocumentUser,
           as: 'documentsUsers',
-          separate: true
+          separate: true,
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['username']
+            }
+          ]
         },
         {
           model: DocumentFavorite,
