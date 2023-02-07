@@ -119,6 +119,10 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   }
 }
 
+.cursor-default {
+  cursor: inherit !important;
+}
+
 @media (max-width: 750px) {
   .wrapper {
     justify-content: center;

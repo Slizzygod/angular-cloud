@@ -66,6 +66,7 @@
     <div (mouseover)="document['isHover'] = true" (mouseout)="document['isHover'] = false" *ngFor="let document of documents">
       <div
         class="entity"
+        [class.cursor-default]="document.extension !== 'doc'"
         [class.selected]="selectedDocument && selectedDocument.id === document.id"
         (click)="onClickDocument(document)"
         (dblclick)="onDblClickDocument(document)"

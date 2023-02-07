@@ -83,6 +83,10 @@ export class CloudStructureComponent implements OnDestroy {
   }
 
   onDblClickDocument(document: Document): void {
+    if (document.extension !== 'doc') {
+      return;
+    }
+
     const dialogRef = this.dialog.open(DocumentEditorComponent, {
       data: { document, parent: this.parent },
       width: '80vh',
@@ -260,7 +264,7 @@ export class CloudStructureComponent implements OnDestroy {
 
   onClickUploadFile(event: any): void {
     const file: File = event.target.files[0];
-    console.log(file)
+
     if (file) {
       const formData = new FormData();
 
