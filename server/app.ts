@@ -9,6 +9,7 @@ import { config } from './core/config/config';
 import { models } from './core/models/sequelize';
 import { setRoutes } from './routes';
 import { foldersService } from './modules/folders/services';
+import { BackupService } from './core/services/backup.service';
 
 const app = express();
 
@@ -43,5 +44,7 @@ app.get('/*', (_req, res) => {
 models.sequelize.sync().then(async () => {
   app.listen(app.get('port'), () => console.log(`Targem Localize app listening on port ${app.get('port')}`));
 });
+
+const backups = new BackupService();
 
 export { app };

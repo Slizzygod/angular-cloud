@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { User, Group, FolderUser, Folder } from '../../core/models';
+import { User, Group, FolderUser } from '../../core/models';
 import { foldersService } from '../folders/services';
 import { usersService } from '../users/users.service';
 
@@ -52,6 +52,7 @@ export class GroupsCtrl {
     const name = req.body.name;
     const shortName = req.body.shortName;
     const note = req.body.note;
+    const schedule = req.body.schedule;
     const users = req.body.users;
 
     if (!Array.isArray(users)) {
@@ -71,7 +72,7 @@ export class GroupsCtrl {
         users.length > 0
           ? FolderUser.bulkCreate(users.map((user: number) => ({ userId: user, folderId, owner: false })))
           : FolderUser.destroy({ where: { folderId } }),
-        group.update({ name, shortName, note }, { where: { id } }),
+        group.update({ name, shortName, note, schedule }, { where: { id } }),
         group.setUsers(users)
       ]);
 

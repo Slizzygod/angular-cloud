@@ -10,7 +10,7 @@ import { foldersMapService } from './folders-map.service';
 
 class FoldersService {
 
-  async getFolderPath(user: User, folderId: number): Promise<string> {
+  async getFolderPath(user: User, folderId?: number): Promise<string> {
     let folderPath = `${config.rootDir}/${user.username}`;
 
     if (folderId) {
@@ -64,20 +64,9 @@ class FoldersService {
     const { name, root, parentId, user, group } = data;
 
     const folder = await Folder.create({ name, root, parentId: parentId || null, group: group || null });
+    const folderDir = await this.getFolderPath(user, parentId);
 
-   if (root) {
-    const folderDir = fs.existsSync(`${config.rootDir}/${user.username}/${name}_${folder.id}`);
-
-    if (!folderDir) {
-      await fsPromises.mkdir(`${config.rootDir}/${user.username}/${name}_${folder.id}`);
-    }
-   }
-
-   if (parentId) {
-    const parentFolder = await Folder.findOne({ where: { parentId } });
-    const parentDir = fsFinder.from(`${config.rootDir}`).findDirectories(`${parentFolder.name}_${parentId}`);
-    await fsPromises.mkdir(`${parentDir[0]}/${name}_${folder.id}`);
-   }
+    await fsPromises.mkdir(`${folderDir}/${name}_${folder.id}`);
 
     await logsService.createLog({
       alias: 'createFolder',

@@ -13,6 +13,7 @@ export class Group extends Model {
   public name!: string;
   public shortName: string;
   public note: string;
+  public schedule: string;
 }
 
 Group.init({
@@ -29,6 +30,9 @@ Group.init({
     type: DataTypes.TEXT
   },
   note: {
+    type: DataTypes.TEXT
+  },
+  schedule: {
     type: DataTypes.TEXT
   }
 }, {

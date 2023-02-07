@@ -7,7 +7,6 @@ import { Group, User } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
-// TODO: Доверстать под мобилки, посмотреть для групп OnDelete, OnUpdate
 @Component({
   selector: 'app-groups-settings',
   templateUrl: './groups-settings.component.html',
@@ -24,6 +23,7 @@ export class GroupsSettingsComponent {
     name: new FormControl(''),
     shortName: new FormControl(''),
     note: new FormControl(''),
+    schedule: new FormControl
   });
 
   constructor(
@@ -46,6 +46,7 @@ export class GroupsSettingsComponent {
       name: group.name,
       shortName: group.shortName,
       note: group.note,
+      schedule: group.schedule
     })
   }
 
@@ -95,6 +96,7 @@ export class GroupsSettingsComponent {
       name: this.form.get('name').value,
       shortName: this.form.get('shortName').value,
       note: this.form.get('note').value,
+      schedule: this.form.get('schedule').value,
       users: selectedUsers,
     }
 

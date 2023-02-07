@@ -1,3 +1,8 @@
+// проверить корректное изменения директории для группы на бэке
+// перевести названия файлов на хэш
+// сделать контроль загружаемой инфы
+// сделать schedule
+
 import { saveAs } from 'file-saver';
 
 import { Component, Input, OnDestroy } from '@angular/core';
