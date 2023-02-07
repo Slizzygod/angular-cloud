@@ -46,5 +46,5 @@ Folder.init({
   modelName: 'folders'
 });
 
-Folder.belongsTo(Folder, { as: 'rootFolder', foreignKey: 'parentId' });
+Folder.belongsTo(Folder, { as: 'rootFolder', foreignKey: 'parentId', onDelete: 'CASCADE' });
 Folder.hasMany(Folder, { as: 'childFolders', foreignKey: 'parentId' });

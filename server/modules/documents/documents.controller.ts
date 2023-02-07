@@ -66,7 +66,7 @@ export class DocumentsCtrl {
     const root = Boolean(req.body.root);
     const folderId = Number(req.body.folderId);
     const extension = req.body.extension;
-    const documentData = { name, root, folderId: null, extension };
+    const data = { name, root, folderId: null, extension };
 
     if (!name) {
       return res.status(412).send('Folder name is required');
@@ -77,22 +77,11 @@ export class DocumentsCtrl {
     }
 
     if (!isNaN(folderId)) {
-      documentData.folderId = folderId;
+      data.folderId = folderId;
     }
 
     try {
-      const data = await Document.create({ ...documentData, userId: user.id });
-      await DocumentUser.create({ userId: user.id, documentId: data.id });
-
-      const document = await documentsService.getDocument(data.id, user.id)
-
-      await logsService.createLog({
-        alias: 'createDocument',
-        method: 'POST',
-        data: { name, root, folderId },
-        user,
-        document,
-      });
+      const document = await documentsService.createDocument(data.name, data.root, data.folderId, data.extension, user);
 
       res.send(document);
     } catch (error) {
@@ -121,19 +110,10 @@ export class DocumentsCtrl {
   async deleteDocument(req: Request, res: Response): Promise<any> {
     const user = usersService.getCurrentSessionUser(req);
     const id = Number(req.params['id']);
-
-    const document = await Document.findOne({ where: { id } });
+    const parent = Number(req.query['parent']);
 
     try {
-      await Promise.all([
-        Document.destroy({ where: { id } }),
-        logsService.createLog({
-          alias: 'deleteDocument',
-          method: 'DELETE',
-          user,
-          document,
-        }),
-      ]);
+      documentsService.deleteDocument(id, parent, user);
 
       res.json({ id });
     } catch (error) {
@@ -186,6 +166,22 @@ export class DocumentsCtrl {
 
       res.json({ id });
     } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async uploadDocument(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+    const parent = Number(req.query['parent']);
+    const file = req['files'].thumbnail;
+
+    try {
+      const folder = await documentsService.saveDocument(file.data, file.name, parent, user);
+
+      res.json(folder)
+    } catch (error) {
+      console.log(error);
+
       res.status(500).send(error.message);
     }
   }

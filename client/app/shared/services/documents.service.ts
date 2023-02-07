@@ -40,8 +40,14 @@ export class DocumentsService {
     return this.http.put(`/api/documents/${document.id}`, document);
   }
 
-  deleteDocument(id: number): Observable<any> {
-    return this.http.delete(`/api/documents/${id}`);
+  deleteDocument(id: number, parent: number): Observable<any> {
+    const params: any = {};
+
+    if (parent) {
+      params.parent = parent
+    }
+
+    return this.http.delete(`/api/documents/${id}`, { params });
   }
 
   setDocumentFavorite(id: number): Observable<any> {
@@ -54,6 +60,16 @@ export class DocumentsService {
 
   shareDocument(id: number, users: number[]): Observable<any> {
     return this.http.post(`/api/documents/${id}/share`, { users });
+  }
+
+  uploadDocument(document: FormData, parent: number): Observable<any> {
+    const params: any = {};
+
+    if (parent) {
+      params.parent = parent
+    }
+
+    return this.http.post(`/api/documents/upload`, document, { params });
   }
 
 }

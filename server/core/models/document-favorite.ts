@@ -38,4 +38,4 @@ User.hasMany(DocumentFavorite, { as: 'favoritesDocuments', foreignKey: 'userId' 
 DocumentFavorite.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 
 Document.hasMany(DocumentFavorite, { as: 'favoritesDocuments', foreignKey: 'documentId' });
-DocumentFavorite.belongsTo(Document, { as: 'document', foreignKey: 'documentrId' });
+DocumentFavorite.belongsTo(Document, { as: 'document', foreignKey: 'documentId' });

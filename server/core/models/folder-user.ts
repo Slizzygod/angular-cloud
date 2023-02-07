@@ -15,6 +15,7 @@ export class FolderUser extends Model {
   public owner: boolean;
 
   folder?: Folder;
+  user?: User;
 }
 
 FolderUser.init({

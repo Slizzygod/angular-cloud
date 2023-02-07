@@ -26,5 +26,5 @@ export const config = {
     algorithm: 'HS256',
     secretToken: '7Ycx1DeMnSqtfdthNjrSMKl2SILTrt3y'
   },
-
+  rootDir: 'server/cloud'
 };

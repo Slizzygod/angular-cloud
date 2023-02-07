@@ -78,7 +78,7 @@ export class FoldersCtrl {
       const data = await foldersService.createFolder({ ...folderData, user });
       await FolderUser.create({ userId: user.id, folderId: data.id });
 
-      const folder =await foldersService.getFolder(data.id, user.id);
+      const folder = await foldersService.getFolder(data.id, user.id);
 
       res.send(folder);
     } catch (error) {
@@ -108,18 +108,8 @@ export class FoldersCtrl {
     const user = usersService.getCurrentSessionUser(req);
     const id = Number(req.params['id']);
 
-    const folder = await Folder.findOne({ where: { id } });
-
     try {
-      await Promise.all([
-        Folder.destroy({ where: { id } }),
-        logsService.createLog({
-          alias: 'deleteFolder',
-          method: 'DELETE',
-          user,
-          folder,
-        }),
-      ]);
+      await foldersService.deleteFolder({ id, user });
 
       res.json({ id });
     } catch (error) {

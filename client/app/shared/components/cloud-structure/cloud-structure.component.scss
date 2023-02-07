@@ -56,6 +56,10 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   &:hover {
     background: #f0f1f3a9;
   }
+
+  input {
+    display: none;
+  }
 }
 
 .hidden {

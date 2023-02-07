@@ -116,7 +116,8 @@
       </mat-menu>
     </div>
 
-    <div matTooltip="Загрузить файл" *ngIf="!disableActions" class="upload" (click)="onClickUploadFile()">
+    <div matTooltip="Загрузить файл" *ngIf="!disableActions" class="upload" (click)="fileUpload.click()">
+      <input type="file" class="file-input" (change)="onClickUploadFile($event)" #fileUpload>
       <mat-icon color="primary">upload_file</mat-icon>
     </div>
   </ng-template>

@@ -124,7 +124,7 @@ export class CloudStructureComponent implements OnDestroy {
   onClickDeleteDocument(event: Event, document: Document): void {
     event.stopPropagation();
 
-    this.documentsService.deleteDocument(document.id).subscribe({
+    this.documentsService.deleteDocument(document.id, this.parent).subscribe({
       next: () => this.onDeletedDocument(document),
       error: (error: unknown) => this.onError(error)
     })
@@ -250,8 +250,25 @@ export class CloudStructureComponent implements OnDestroy {
     this.notificationService.success('Успешно расшарено');
   }
 
-  onClickUploadFile(): void {
+  onClickUploadFile(event: any): void {
+    const file: File = event.target.files[0];
+    console.log(file)
+    if (file) {
+      const formData = new FormData();
 
+      formData.append("thumbnail", file);
+
+      this.documentsService.uploadDocument(formData, this.parent).subscribe({
+        next: (document: Document) => this.onUploadedDocument(document),
+        error: (error: unknown) => this.onError(error)
+      });
+    }
+  }
+
+  onUploadedDocument(document: Document): void {
+    this.documents.push(document);
+
+    this.notificationService.success('Документ успешно загружен');
   }
 
   onError(error: unknown): void {

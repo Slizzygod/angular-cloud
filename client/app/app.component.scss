@@ -50,6 +50,10 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   background: mat.get-color-from-palette($my-palette, 500);
 }
 
+:host mat-drawer-content {
+  overflow-x: hidden;
+}
+
 :host mat-icon  {
   color: #fff;
 }

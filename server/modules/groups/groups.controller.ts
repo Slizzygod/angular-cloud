@@ -82,12 +82,13 @@ export class GroupsCtrl {
   }
 
   async deleteGroup(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
     const id = Number(req.params['id']);
 
     try {
       await Promise.all([
         Group.destroy({ where: { id } }),
-        Folder.destroy({ where: { group: id } })
+        foldersService.deleteFolder({ group: id, user })
       ]);
 
       res.json({ id });

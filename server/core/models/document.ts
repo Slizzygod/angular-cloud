@@ -48,5 +48,5 @@ Document.init({
   modelName: 'documents'
 });
 
-Folder.hasMany(Document, { as: 'documents', foreignKey: 'documentId' });
-Document.belongsTo(Folder, { as: 'folder', foreignKey: 'documentId' });
+Folder.hasMany(Document, { as: 'documents', foreignKey: 'folderId' });
+Document.belongsTo(Folder, { as: 'folder', foreignKey: 'folderId' });
