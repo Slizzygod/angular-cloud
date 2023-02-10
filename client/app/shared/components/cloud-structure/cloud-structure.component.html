@@ -1,5 +1,5 @@
 <div class="wrapper">
-  <div class="empty-data" *ngIf="disableActions && folders.length === 0; else ready">
+  <div class="empty-data" *ngIf="disableActions && folders.length === 0 && documents.length === 0; else ready">
     Нет данных
   </div>
 
