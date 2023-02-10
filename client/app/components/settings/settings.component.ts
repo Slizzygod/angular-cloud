@@ -53,7 +53,8 @@ export class SettingsComponent implements OnInit {
     this.notificationService.success('Настройки успешно сохранены');
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 }

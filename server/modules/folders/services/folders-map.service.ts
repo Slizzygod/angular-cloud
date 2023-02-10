@@ -15,11 +15,13 @@ class FoldersMapService {
   }
 
   getFolderMap(folder: Folder, userId: number, folderUsers: FolderUser[] = []): any {
+    const needlyFolderUsers = folder.foldersUsers || folderUsers;
+
     return {
       id: folder.id,
       name: folder.name,
       owner: !!folder.foldersUsers.find((el: FolderUser) => el.userId === userId && el.owner),
-      shared: folderUsers.filter((el: FolderUser) => !el.owner && el.folderId === folder.id).map((el: FolderUser) => el.userId),
+      shared: needlyFolderUsers.filter((el: FolderUser) => !el.owner && el.folderId === folder.id).map((el: FolderUser) => el.userId),
       favorite: !!folder.favoritesFolders[0],
       parentId: folder.parentId,
       root: folder.root,

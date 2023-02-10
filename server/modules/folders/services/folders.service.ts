@@ -123,7 +123,7 @@ class FoldersService {
     }
 
     const folder = await Folder.findOne({ where: { id: id || group } });
-    const dir = fsFinder.from(`${config.rootDir}`).findDirectories(`${folder.name}_${folder.id}`);
+    const folderPath = await this.getFolderPath(user, folder.id);
 
     await Promise.all([
       Folder.destroy({ where: condition }),
@@ -133,7 +133,7 @@ class FoldersService {
         user,
         folder,
       }),
-      fsPromises.rmdir(dir[0], { recursive: true }),
+      fsPromises.rmdir(folderPath, { recursive: true }),
     ]);
   }
 

@@ -124,7 +124,8 @@ export class GroupsSettingsComponent {
     this.users.sort((a: User, b: User) => b['state'] - a['state']);
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 

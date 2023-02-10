@@ -35,7 +35,7 @@ export class DocumentEditorComponent {
     public dialogRef: MatDialogRef<DocumentEditorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { document: Document, parent: number },
     private notificationService: NotificationService,
-    private documentsService: DocumentsService
+    private documentsService: DocumentsService,
   ) {
     this.document = data.document;
     this.parent = data.parent;
@@ -83,7 +83,8 @@ export class DocumentEditorComponent {
     this.dialogRef.close();
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 }

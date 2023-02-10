@@ -118,7 +118,8 @@ export class UsersSettingsComponent implements OnChanges {
     this.users.sort((a: User, b: User) => Number(a.blocked) - Number(b.blocked));
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 

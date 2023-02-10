@@ -3,6 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Folder, Document } from '@app/core/models';
 import { forkJoin, Subscription } from 'rxjs';
 import { FoldersService, DocumentsService, utilsService } from '../../shared/services';
+import { NotificationService } from './../../core/services/notification.service';
 
 @Component({
   selector: 'app-cloud',
@@ -21,6 +22,7 @@ export class CloudComponent implements OnInit {
     private route: ActivatedRoute,
     private foldersService: FoldersService,
     private documentService: DocumentsService,
+    private notificationService: NotificationService,
   ) { }
 
   getInfo(): string {
@@ -60,7 +62,8 @@ export class CloudComponent implements OnInit {
     this.documents = documents;
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 

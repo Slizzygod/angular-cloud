@@ -99,7 +99,7 @@ export class DocumentsService {
       params.parent = parent
     }
 
-    return this.http.get(`/api/documents/${id}/download`, { responseType: 'blob' });
+    return this.http.get(`/api/documents/${id}/download`, { params, responseType: 'blob' });
   }
 
 }

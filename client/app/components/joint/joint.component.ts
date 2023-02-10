@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Folder, Document } from '@app/core/models';
 import { DocumentsService, FoldersService, utilsService } from '@app/shared/services';
 import { forkJoin } from 'rxjs';
+import { NotificationService } from './../../core/services/notification.service';
 
 @Component({
   selector: 'app-joint',
@@ -16,6 +17,7 @@ export class JointComponent {
   constructor(
     private foldersService: FoldersService,
     private documentsService: DocumentsService,
+    private notificationService: NotificationService
   ) { }
 
   getInfo(): string {
@@ -44,7 +46,8 @@ export class JointComponent {
     this.documents = documents;
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 

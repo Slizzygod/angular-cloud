@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 
 import { UsersService } from './services';
+import { NotificationService } from '@app/core/services';
 
 import { User, Group } from '@app/core/models';
 
@@ -16,7 +17,10 @@ export class UsersComponent implements OnInit {
   users: User[] = [];
   groups: Group[] = [];
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.onGetData();
@@ -45,7 +49,8 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  onError(error: unknown): void {
+  onError(error: any): void {
+    this.notificationService.error(error.error);
     console.error(error);
   }
 
