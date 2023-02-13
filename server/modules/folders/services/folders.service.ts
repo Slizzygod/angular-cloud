@@ -5,7 +5,7 @@ import * as fsFinder from 'fs-finder';
 import { config } from '../../../core/config/config';
 
 import { logsService } from '../../logs/logs.service';
-import { Folder, FolderFavorite, FolderUser, User } from './../../../core/models';
+import { Folder, FolderUser, User } from './../../../core/models';
 import { foldersMapService } from './folders-map.service';
 
 class FoldersService {
@@ -45,11 +45,6 @@ class FoldersService {
         {
           model: FolderUser,
           as: 'foldersUsers',
-          separate: true
-        },
-        {
-          model: FolderFavorite,
-          as: 'favoritesFolders',
           separate: true
         }
       ]
@@ -137,7 +132,7 @@ class FoldersService {
     ]);
   }
 
-  async createRootFolders() {
+  async createRootFolders(): Promise<any> {
     const rootFolder = fs.existsSync(config.rootDir);
 
     if (!rootFolder) {
@@ -147,6 +142,14 @@ class FoldersService {
       for (const user of users) {
         await fsPromises.mkdir(`${config.rootDir}/${user.username}`);
       }
+    }
+  }
+
+  async createUserFolder(user: User): Promise<any> {
+    const userFolder = fs.existsSync(`${config.rootDir}/${user.username}`);
+
+    if (!userFolder) {
+      await fsPromises.mkdir(`${config.rootDir}/${user.username}`);
     }
   }
 

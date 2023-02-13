@@ -13,6 +13,7 @@ export class DocumentUser extends Model {
   public documentId!: number;
   public userId!: number;
   public owner: boolean;
+  public favorite: boolean;
 
   document?: Document;
 }
@@ -34,6 +35,10 @@ DocumentUser.init({
   owner: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  favorite: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   sequelize: models.sequelize,

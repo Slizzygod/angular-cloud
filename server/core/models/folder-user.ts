@@ -13,6 +13,7 @@ export class FolderUser extends Model {
   public folderId!: number;
   public userId!: number;
   public owner: boolean;
+  public favorite: boolean;
 
   folder?: Folder;
   user?: User;
@@ -35,6 +36,10 @@ FolderUser.init({
   owner: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  favorite: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   sequelize: models.sequelize,

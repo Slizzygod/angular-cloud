@@ -45,6 +45,6 @@ models.sequelize.sync().then(async () => {
   app.listen(app.get('port'), () => console.log(`Targem Localize app listening on port ${app.get('port')}`));
 });
 
-const backups = new BackupService();
+// const backups = new BackupService();
 
 export { app };

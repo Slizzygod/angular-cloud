@@ -5,7 +5,7 @@ import * as mime from 'mime-types';
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 
-import { Document, DocumentFavorite, DocumentUser } from '../../core/models';
+import { Document, DocumentUser } from '../../core/models';
 import { usersService } from '../users/users.service';
 import { documentsMapService, documentsService } from './services';
 import { foldersService } from '../folders/services';
@@ -59,38 +59,33 @@ export class DocumentsCtrl {
     const user = usersService.getCurrentSessionUser(req);
 
     let documentCondition: any = { root: true };
-    let documentFavoriteCondition: any = { userId: user.id };
-    let documentUserCondition: any = { '$documentsUsers.userId$': user.id };
+    let documentUserCondition: any = { userId: user.id };
 
     if (!isNaN(folderId)) {
       documentCondition = { folderId };
     }
 
     if (owner) {
-      documentUserCondition['$documentsUsers.owner$'] = true
+      documentUserCondition.owner = true
     }
 
     if (!favorites && !folderId && !owner) {
-      documentUserCondition['$documentsUsers.owner$'] = { [Op.or]: [false, null] };
+      documentUserCondition.owner = { [Op.or]: [false, null] };
     }
 
     if (favorites) {
       documentCondition = {};
+      documentUserCondition.favorite = true;
     }
 
     try {
       const documents = await Document.findAll({
-        where: { ...documentCondition, ...documentUserCondition },
+        where: documentCondition,
         include: [
           {
             model: DocumentUser,
             as: 'documentsUsers',
-          },
-          {
-            model: DocumentFavorite,
-            as: 'favoritesDocuments',
-            where: documentFavoriteCondition,
-            separate: favorites ? false : true
+            where: documentUserCondition
           }
         ]
       });
@@ -169,26 +164,13 @@ export class DocumentsCtrl {
     const id = Number(req.params['id']);
 
     try {
-      const documentFavorite = await DocumentFavorite.findOne({ where: { userId: user.id, documentId: id } });
+      const document = await DocumentUser.findOne({ where: { userId: user.id, documentId: id } });
 
-      if (documentFavorite) {
-        return res.status(400).send('Document is already favorited');
+      if (!document) {
+        return res.status(400).send('Document is not defined');
       }
 
-      await DocumentFavorite.create({ userId: user.id, documentId: id });
-
-      res.json({ id });
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  }
-
-  async deleteDocumentFavorite(req: Request, res: Response): Promise<any> {
-    const user = usersService.getCurrentSessionUser(req);
-    const id = Number(req.params['id']);
-
-    try {
-      await DocumentFavorite.destroy({ where: { userId: user.id, documentId: id } });
+      await document.update({ favorite: !Boolean(document.favorite) });
 
       res.json({ id });
     } catch (error) {

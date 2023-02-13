@@ -95,42 +95,23 @@ export class CloudStructureComponent implements OnDestroy {
     });
   }
 
-  onClickAddFavoriteDocument(event: Event, document: Document): void {
+  onClickSetFavoriteDocument(event: Event, document: Document): void {
     event.stopPropagation();
 
     this.documentsService.setDocumentFavorite(document.id).subscribe({
-      next: (document: Document) => this.onAddedFavoriteDocument(document),
+      next: (document: Document) => this.onSettedFavoriteDocument(document),
       error: (error: unknown) => this.onError(error)
     });
   }
 
-  onAddedFavoriteDocument(document: Document): void {
+  onSettedFavoriteDocument(document: Document): void {
     const needlyDocument = this.getDocumentFromList(document.id);
 
     if (needlyDocument) {
-      needlyDocument.favorite = true;
+      needlyDocument.favorite = !Boolean(needlyDocument.favorite);
     }
 
     this.notificationService.success('Файл успешно добавлен в избранное');
-  }
-
-  onClickDeleteFavoriteDocument(event: Event, document: Document): void {
-    event.stopPropagation();
-
-    this.documentsService.deleteDocumentFavorite(document.id).subscribe({
-      next: (document: Document) => this.onDeletedFavoriteDocument(document),
-      error: (error: unknown) => this.onError(error)
-    });
-  }
-
-  onDeletedFavoriteDocument(document: Document): void {
-    const needlyDocument = this.getDocumentFromList(document.id);
-
-    if (needlyDocument) {
-      needlyDocument.favorite = false;
-    }
-
-    this.notificationService.success('Файл успешно удален из избранного');
   }
 
   onClickDeleteDocument(event: Event, document: Document): void {
@@ -171,43 +152,25 @@ export class CloudStructureComponent implements OnDestroy {
     this.router.navigate([`cloud/folders/`, folder.id]);
   }
 
-  onClickAddFavoriteFolder(event: Event, folder: Folder): void {
+  onClickSetFavoriteFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
     this.foldersService.setFolderFavorite(folder.id).subscribe({
-      next: (folder: Folder) => this.onAddedFavoriteFolder(folder),
+      next: (folder: Folder) => this.onSettedFavoriteFolder(folder),
       error: (error: unknown) => this.onError(error)
     });
   }
 
-  onAddedFavoriteFolder(folder: Folder): void {
+  onSettedFavoriteFolder(folder: Folder): void {
     const needlyFolder = this.getFolderFromList(folder.id);
 
     if (needlyFolder) {
-      needlyFolder.favorite = true;
+      needlyFolder.favorite = !Boolean(needlyFolder.favorite);
     }
 
     this.notificationService.success('Папка успешно добавлена в избранное');
   }
 
-  onClickDeleteFavoriteFolder(event: Event, folder: Folder): void {
-    event.stopPropagation();
-
-    this.foldersService.deleteFolderFavorite(folder.id).subscribe({
-      next: (folder: Folder) => this.onDeletedFavoriteFolder(folder),
-      error: (error: unknown) => this.onError(error)
-    });
-  }
-
-  onDeletedFavoriteFolder(folder: Folder): void {
-    const needlyFolder = this.getFolderFromList(folder.id);
-
-    if (needlyFolder) {
-      needlyFolder.favorite = false;
-    }
-
-    this.notificationService.success('Папка успешно удалена из избранного');
-  }
 
   onClickDeleteFolder(event: Event, folder: Folder): void {
     event.stopPropagation();

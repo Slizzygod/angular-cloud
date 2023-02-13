@@ -22,7 +22,7 @@ class FoldersMapService {
       name: folder.name,
       owner: !!folder.foldersUsers.find((el: FolderUser) => el.userId === userId && el.owner),
       shared: needlyFolderUsers.filter((el: FolderUser) => !el.owner && el.folderId === folder.id).map((el: FolderUser) => el.userId),
-      favorite: !!folder.favoritesFolders[0],
+      favorite: needlyFolderUsers.find((el: FolderUser) => el.userId === userId)?.favorite,
       parentId: folder.parentId,
       root: folder.root,
       createdAt: folder.createdAt,

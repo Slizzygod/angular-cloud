@@ -21,7 +21,7 @@ class DocumentsMapService {
       extension: document.extension,
       owner: !!document.documentsUsers.find((el: DocumentUser) => el.userId === userId && el.owner),
       shared: documentUsers.filter((el: DocumentUser) => !el.owner && el.documentId === document.id).map((el: DocumentUser) => el.userId),
-      favorite: !!document.favoritesDocuments[0],
+      favorite: documentUsers.find((el: DocumentUser) => el.userId === userId)?.favorite,
       root: document.root,
       documentsUsers: document.documentsUsers || [],
       createdAt: document.createdAt,

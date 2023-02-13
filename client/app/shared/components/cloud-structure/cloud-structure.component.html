@@ -46,16 +46,9 @@
           </div>
           <div class="name">
             <mat-icon
-              *ngIf="folder.favorite"
-              (click)="onClickDeleteFavoriteFolder($event, folder)"
+              (click)="onClickSetFavoriteFolder($event, folder)"
               color="primary"
-              >favorite</mat-icon
-            >
-            <mat-icon
-              *ngIf="!folder.favorite"
-              (click)="onClickAddFavoriteFolder($event, folder)"
-              color="primary"
-              >favorite_outline</mat-icon
+              >{{ folder.favorite ? 'favorite' : 'favorite_outline'}}</mat-icon
             >
             <span [matTooltip]="folder.name">{{ folder.name }}</span>
           </div>
@@ -105,16 +98,9 @@
           </div>
           <div class="name">
             <mat-icon
-              *ngIf="document.favorite"
-              (click)="onClickDeleteFavoriteDocument($event, document)"
+              (click)="onClickSetFavoriteDocument($event, document)"
               color="primary"
-              >favorite</mat-icon
-            >
-            <mat-icon
-              *ngIf="!document.favorite"
-              (click)="onClickAddFavoriteDocument($event, document)"
-              color="primary"
-              >favorite_outline</mat-icon
+              >{{ document.favorite  ? 'favorite' :  'favorite_outline'}}</mat-icon
             >
             <span matTooltip="{{ document.name }}.{{ document.extension }}">
               {{ document.name }}.{{ document.extension }}

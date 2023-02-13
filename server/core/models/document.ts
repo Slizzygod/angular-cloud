@@ -1,5 +1,4 @@
 import { DataTypes, Model } from "sequelize";
-import { DocumentFavorite } from "./document-favorite";
 import { DocumentUser } from "./document-user";
 import { Folder } from "./folder";
 
@@ -14,7 +13,6 @@ export class Document extends Model {
   public extension!: string;
   public folderId: number;
 
-  public favoritesDocuments?: DocumentFavorite[];
   public documentsUsers?: DocumentUser[];
 
   public readonly createdAt!: Date;

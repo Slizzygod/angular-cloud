@@ -2,7 +2,7 @@ import * as fsPromises from 'fs/promises';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { DocumentFavorite, DocumentUser, Document, User } from "../../../core/models";
+import { DocumentUser, Document, User } from "../../../core/models";
 import { logsService } from '../../logs/logs.service';
 import { documentsMapService } from "./documents-map.service";
 import { foldersService } from '../../folders/services';
@@ -24,11 +24,6 @@ class DocumentsService {
               attributes: ['username']
             }
           ]
-        },
-        {
-          model: DocumentFavorite,
-          as: 'favoritesDocuments',
-          separate: true
         }
       ]
     });

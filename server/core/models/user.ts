@@ -8,7 +8,6 @@ export class User extends Model {
   public firstName: string | undefined;
   public lastName: string | undefined;
   public patronymicName: string | undefined;
-  public email: string | undefined;
   public blocked: boolean | undefined;
   public permissions: string[] | undefined;
   public username!: string;
@@ -37,9 +36,6 @@ User.init({
     type: DataTypes.TEXT
   },
   password: {
-    type: DataTypes.TEXT
-  },
-  email: {
     type: DataTypes.TEXT
   },
   blocked: {

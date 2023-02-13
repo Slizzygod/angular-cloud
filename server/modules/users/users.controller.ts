@@ -6,6 +6,7 @@ import { User } from '../../core/models';
 import { config } from '../../core/config/env/all';
 import { PERMISSION_USER } from '../../shared/constants';
 import { usersService } from './users.service';
+import { foldersService } from '../folders/services';
 
 export class UsersCtrl {
 
@@ -57,6 +58,8 @@ export class UsersCtrl {
         config.jwt.secretToken,
         { expiresIn: config.jwt.expiresIn }
       );
+
+      await foldersService.createUserFolder(user);
 
       res.json({ token });
     } catch (error) {

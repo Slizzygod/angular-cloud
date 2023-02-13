@@ -47,10 +47,6 @@ export class FoldersService {
     return this.http.post(`/api/folders/${id}/favorite`, {});
   }
 
-  deleteFolderFavorite(id: number): Observable<any> {
-    return this.http.delete(`/api/folders/${id}/favorite`);
-  }
-
   shareFolder(id: number, users: number[]): Observable<any> {
     return this.http.post(`/api/folders/${id}/share`, { users });
   }

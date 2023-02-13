@@ -1,7 +1,7 @@
 import * as archiver from 'archiver';
 
 import { Request, Response } from 'express';
-import { Folder, FolderFavorite, FolderUser } from '../../core/models';
+import { Folder, FolderUser } from '../../core/models';
 
 import { usersService } from '../users/users.service';
 import { foldersMapService, foldersService } from './services';
@@ -16,38 +16,33 @@ export class FoldersCtrl {
     const user = usersService.getCurrentSessionUser(req);
 
     let folderCondition: any = { root: true };
-    let folderFavoriteCondition: any = { userId: user.id };
-    let folderUserCondition: any = { '$foldersUsers.userId$': user.id };
+    let folderUserCondition: any = { userId: user.id };
 
     if (!isNaN(parentId)) {
       folderCondition = { parentId };
     }
 
     if (owner) {
-      folderUserCondition['$foldersUsers.owner$'] = true;
+      folderUserCondition.owner = true;
     }
 
     if (!favorites && !parentId && !owner) {
-      folderUserCondition['$foldersUsers.owner$'] = { [Op.or]: [false, null] };
+      folderUserCondition.owner = { [Op.or]: [false, null] };
     }
 
     if (favorites) {
       folderCondition = {};
+      folderUserCondition.favorite = true;
     }
 
     try {
       const folders = await Folder.findAll({
-        where: { ...folderCondition, ...folderUserCondition },
+        where: folderCondition,
         include: [
           {
             model: FolderUser,
             as: 'foldersUsers',
-          },
-          {
-            model: FolderFavorite,
-            as: 'favoritesFolders',
-            where: folderFavoriteCondition,
-            separate: favorites ? false : true
+            where: folderUserCondition
           }
         ]
       });
@@ -123,26 +118,13 @@ export class FoldersCtrl {
     const id = req.params['id'];
 
     try {
-      const folderFavorite = await FolderFavorite.findOne({ where: { userId: user.id, folderId: id } });
+      const folder = await FolderUser.findOne({ where: { userId: user.id, folderId: id } });
 
-      if (folderFavorite) {
-        return res.status(400).send('Folder is already favorited');
+      if (!folder) {
+        return res.status(400).send('Folder is not defined');
       }
 
-      await FolderFavorite.create({ userId: user.id, folderId: id });
-
-      res.json({ id });
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  }
-
-  async deleteFolderFavorite(req: Request, res: Response): Promise<any> {
-    const user = usersService.getCurrentSessionUser(req);
-    const id = req.params['id'];
-
-    try {
-      await FolderFavorite.destroy({ where: { userId: user.id, folderId: id } });
+      await folder.update({ favorite: !Boolean(folder.favorite) });
 
       res.json({ id });
     } catch (error) {

@@ -1,5 +1,4 @@
 import { DataTypes, Model } from "sequelize";
-import { FolderFavorite } from "./folder-favorite";
 import { FolderUser } from "./folder-user";
 
 import { models } from "./sequelize";
@@ -14,7 +13,6 @@ export class Folder extends Model {
   public parentId: number;
   public group: number;
 
-  public favoritesFolders?: FolderFavorite[];
   public foldersUsers?: FolderUser[];
 
   public readonly createdAt!: Date;
