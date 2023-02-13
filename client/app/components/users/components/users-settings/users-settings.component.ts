@@ -119,7 +119,6 @@ export class UsersSettingsComponent implements OnChanges {
   }
 
   onError(error: any): void {
-    this.notificationService.error(error.error);
     console.error(error);
   }
 

@@ -3,7 +3,6 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UsersService } from '@app/components/users/services';
 import { User } from '@app/core/models';
-import { NotificationService } from '@app/core/services';
 
 @Component({
   selector: 'app-share',
@@ -17,8 +16,7 @@ export class ShareComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ShareComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { shared: number[] },
-    private usersService: UsersService,
-    private notificationService: NotificationService
+    private usersService: UsersService
   ) { }
 
   ngOnInit() {
@@ -50,7 +48,6 @@ export class ShareComponent implements OnInit {
   }
 
   onError(error: any) {
-    this.notificationService.error(error.error);
     console.log(error);
   }
 

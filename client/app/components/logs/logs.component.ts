@@ -4,7 +4,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Log } from '@app/core/models';
 import { LOGS_COLUMNS } from './logs.constants';
 import { LogsService } from './services/logs.service';
-import { NotificationService } from './../../core/services/notification.service';
 
 @Component({
   selector: 'app-logs',
@@ -20,8 +19,7 @@ export class LogsComponent implements OnInit {
   columns = LOGS_COLUMNS;
 
   constructor(
-    public logsService: LogsService,
-    private notificationService: NotificationService
+    public logsService: LogsService
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +42,6 @@ export class LogsComponent implements OnInit {
   }
 
   onError(error: any): void {
-    this.notificationService.error(error.error);
     console.error(error);
   }
 

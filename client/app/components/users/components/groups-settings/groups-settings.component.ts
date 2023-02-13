@@ -125,7 +125,6 @@ export class GroupsSettingsComponent {
   }
 
   onError(error: any): void {
-    this.notificationService.error(error.error);
     console.error(error);
   }
 

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Folder, Document } from '@app/core/models';
-import { NotificationService } from '@app/core/services';
 import { DocumentsService, FoldersService, utilsService } from '@app/shared/services';
 import { forkJoin } from 'rxjs';
 
@@ -16,8 +15,7 @@ export class FavoritesComponent implements OnInit {
 
   constructor(
     private foldersService: FoldersService,
-    private documentsService: DocumentsService,
-    private notificationService: NotificationService
+    private documentsService: DocumentsService
   ) { }
 
   getInfo(): string {
@@ -47,7 +45,6 @@ export class FavoritesComponent implements OnInit {
   }
 
   onError(error: any): void {
-    this.notificationService.error(error.error);
     console.error(error);
   }
 

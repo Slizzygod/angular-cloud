@@ -1,7 +1,8 @@
 import { SharedModule } from '@app/shared/shared.module';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorHandler, NgModule, Optional, SkipSelf } from '@angular/core';
+import { ErrorHandlerService } from './services/error-handler.service';
 import { RouterModule } from '@angular/router';
 import { StoreModule } from '@ngrx/store';
 import { metaReducers, reducers } from './core.state';
@@ -10,6 +11,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { LocalStorageService, PermsGuardService } from './services';
 import { EffectsModule } from '@ngrx/effects';
 import { NotificationService } from './services/notification.service';
+import { HttpErrorInterceptor } from './services/http-error-interceptor';
 
 export function tokenGetter() {
   const storage = new LocalStorageService;
@@ -31,7 +33,9 @@ export function tokenGetter() {
   providers: [
     AuthGuardService,
     NotificationService,
-    PermsGuardService
+    PermsGuardService,
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
   ],
 })
 export class CoreModule {
