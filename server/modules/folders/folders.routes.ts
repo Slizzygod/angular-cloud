@@ -11,5 +11,6 @@ export function setFoldersRoutes(router: express.Router) {
   router.route('/folders/:id/favorite').post(foldersCtrl.setFolderFavorite);
   router.route('/folders/:id/share').post(foldersCtrl.shareFolder);
   router.route('/folders/:id/download').get(foldersCtrl.downloadFolder);
+  router.route('/folders/:id/move').post(foldersCtrl.moveFolder);
 
 }

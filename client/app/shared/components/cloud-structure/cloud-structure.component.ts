@@ -4,11 +4,13 @@ import { Component, Input, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { DndDropEvent } from 'ngx-drag-drop';
 import { Folder, Document } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
-import { DocumentsService, FoldersService } from '@app/shared/services';
+import { DocumentsService, FoldersService, utilsService } from '@app/shared/services';
 import { ShareComponent } from '../share/share.component';
 import { DocumentEditorComponent } from './../document-editor/document-editor.component';
+import { CLOUD_STRUCTURE_DROP_EVENTS_TYPES, CLOUD_STRUCTURE_MODES } from './cloud-structure.config';
 
 import {
   getMaterialFileIcon,
@@ -28,6 +30,7 @@ export class CloudStructureComponent implements OnDestroy {
   @Input() documents: Document[] = [];
   @Input() parent: number = null;
   @Input() disableActions: boolean = false;
+  @Input() mode: string = null;
 
   selectedFolder: Folder = null;
   selectedDocument: Document = null;
@@ -43,6 +46,13 @@ export class CloudStructureComponent implements OnDestroy {
     public dialog: MatDialog,
     private router: Router
   ) {}
+
+  get statistics(): string {
+    const folders = utilsService.getQuantitativeDeclinationString(this.folders?.length, ['папка', 'папки', 'папок']);
+    const document = utilsService.getQuantitativeDeclinationString(this.documents?.length, ['документ', 'документа', 'документов']);
+
+    return `${folders}, ${document}`;
+  }
 
   getFolderFromList(id: number): Folder {
     return this.folders.find((el: Folder) => Number(el.id) === Number(id));
@@ -87,8 +97,8 @@ export class CloudStructureComponent implements OnDestroy {
       return;
     }
 
-    const dialogRef = this.dialog.open(DocumentEditorComponent, {
-      data: { document, parent: this.parent },
+    this.dialog.open(DocumentEditorComponent, {
+      data: { document },
       width: '80vh',
       minHeight: 'auto',
       disableClose: true
@@ -109,15 +119,21 @@ export class CloudStructureComponent implements OnDestroy {
 
     if (needlyDocument) {
       needlyDocument.favorite = !Boolean(needlyDocument.favorite);
-    }
 
-    this.notificationService.success('Файл успешно добавлен в избранное');
+      if (this.mode === CLOUD_STRUCTURE_MODES.FAVORITES) {
+        this.documents = this.documents.filter((el: Document) => el.favorite);
+      }
+
+      const message = needlyDocument.favorite ? 'Файл успешно добавлен в избранное' : 'Файл успешно удален из избранного';
+
+      this.notificationService.success(message);
+    }
   }
 
   onClickDeleteDocument(event: Event, document: Document): void {
     event.stopPropagation();
 
-    this.documentsService.deleteDocument(document.id, this.parent).subscribe({
+    this.documentsService.deleteDocument(document.id).subscribe({
       next: () => this.onDeletedDocument(document),
       error: (error: unknown) => this.onError(error)
     })
@@ -166,9 +182,15 @@ export class CloudStructureComponent implements OnDestroy {
 
     if (needlyFolder) {
       needlyFolder.favorite = !Boolean(needlyFolder.favorite);
-    }
 
-    this.notificationService.success('Папка успешно добавлена в избранное');
+      if (this.mode === CLOUD_STRUCTURE_MODES.FAVORITES) {
+        this.folders = this.folders.filter((el: Folder) => el.favorite);
+      }
+
+      const message = needlyFolder.favorite ? 'Папка успешно добавлена в избранное' : 'Папка успешно удалена из избранного';
+
+      this.notificationService.success(message);
+    }
   }
 
 
@@ -249,7 +271,7 @@ export class CloudStructureComponent implements OnDestroy {
   onClickDownloadFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
-    this.foldersService.downloadFolder(folder.id, this.parent).subscribe({
+    this.foldersService.downloadFolder(folder.id).subscribe({
       next: (data: Blob) => this.onDownloadedFolder(data, folder),
       error: (error: unknown) => this.onError(error)
     });
@@ -263,7 +285,7 @@ export class CloudStructureComponent implements OnDestroy {
   onClickDownloadDocument(event: Event, document: Document): void {
     event.stopPropagation();
 
-    this.documentsService.downloadDocument(document.id, this.parent).subscribe({
+    this.documentsService.downloadDocument(document.id).subscribe({
       next: (data: Blob) => this.onDownloadedDocument(data, document),
       error: (error: unknown) => this.onError(error)
     });
@@ -272,6 +294,50 @@ export class CloudStructureComponent implements OnDestroy {
   onDownloadedDocument(data: Blob, document: Document): void {
     saveAs(data, document.name);
     this.notificationService.success('Документ успешно скачан');
+  }
+
+  onDropElement(event: DndDropEvent, destFolder: Folder): void {
+    if (event && event.data) {
+      const { id } = event.data;
+
+      if (event.data.type === CLOUD_STRUCTURE_DROP_EVENTS_TYPES.FOLDER && id === destFolder.id) {
+        return;
+      }
+
+      if (event.data.type === CLOUD_STRUCTURE_DROP_EVENTS_TYPES.FOLDER) {
+        this.onMoveFolder(id, destFolder.id);
+      }
+
+      if (event.data.type === CLOUD_STRUCTURE_DROP_EVENTS_TYPES.DOCUMENT) {
+        this.onMoveDocument(id, destFolder.id);
+      }
+    }
+  }
+
+  onMoveDocument(id: number, destFolderId: number): void {
+    this.documentsService.moveDocument(id, destFolderId).subscribe({
+      next: () => this.onMovedDocument(id),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onMovedDocument(id: number): void {
+    this.documents = this.documents.filter((el: Document) => el.id !== id);
+
+    this.notificationService.success('Документ успешно перемещен');
+  }
+
+  onMoveFolder(id: number, destFolderId: number): void {
+    this.foldersService.moveFolder(id, destFolderId).subscribe({
+      next: () => this.onMovedFolder(id),
+      error: (error: unknown) => this.onError(error)
+    })
+  }
+
+  onMovedFolder(id: number): void {
+    this.folders = this.folders.filter((el: Folder) => el.id !== id);
+
+    this.notificationService.success('Папка успешно перемещена');
   }
 
   onError(error: unknown): void {

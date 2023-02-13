@@ -48,6 +48,7 @@
     "fs-finder": "^1.8.1",
     "later": "^1.2.0",
     "mime-types": "^2.1.35",
+    "ngx-drag-drop": "^15.0.1",
     "ngx-quill": "^20.0.1",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",

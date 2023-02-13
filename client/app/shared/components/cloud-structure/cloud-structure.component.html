@@ -1,130 +1,148 @@
 <div class="wrapper">
-  <div class="empty-data" *ngIf="disableActions && folders.length === 0 && documents.length === 0; else ready">
-    Нет данных
-  </div>
+  <div class="statistics" *ngIf="folders?.length > 0 || documents?.length > 0">{{ statistics }}</div>
 
-  <ng-template #ready>
-    <div (mouseover)="folder['isHover'] = true" (mouseout)="folder['isHover'] = false" *ngFor="let folder of folders">
+  <div class="content">
+    <div class="empty-data" *ngIf="disableActions && folders.length === 0 && documents.length === 0; else ready">
+      Нет данных
+    </div>
+
+    <ng-template #ready>
       <div
-        class="entity"
-        [class.selected]="selectedFolder && selectedFolder.id === folder.id"
-        (click)="onClickFolder(folder)"
-        (dblclick)="onDblClickFolder(folder)"
+        dndDropzone
+        [dndDraggable]="{ type: 'folder', id: folder.id }"
+        [dndDisableIf]="disableActions"
+        (dndDrop)="onDropElement($event, folder)"
+        (mouseover)="folder['isHover'] = true"
+        (mouseout)="folder['isHover'] = false"
+        *ngFor="let folder of folders"
       >
-        <div class="entity-content">
-          <div class="actions" [class.hidden]="!folder['isHover']">
-            <div class="download">
-              <mat-icon
-                (click)="onClickDownloadFolder($event, folder)"
-                color="primary"
-                >download</mat-icon
-              >
+        <div
+          class="entity"
+          [class.selected]="selectedFolder && selectedFolder.id === folder.id"
+          (click)="onClickFolder(folder)"
+          (dblclick)="onDblClickFolder(folder)"
+        >
+          <div class="entity-content">
+            <div class="actions" [class.hidden]="!folder['isHover']">
+              <div class="download">
+                <mat-icon
+                  (click)="onClickDownloadFolder($event, folder)"
+                  color="primary"
+                  >download</mat-icon
+                >
+              </div>
+
+              <div class="delete">
+                <mat-icon
+                  *ngIf="folder.owner"
+                  (click)="onClickDeleteFolder($event, folder)"
+                  color="primary"
+                  >clear</mat-icon
+                >
+              </div>
             </div>
 
-            <div class="delete">
+            <img [src]="getFolderIcon('folder')" width="100" />
+            <div class="share">
               <mat-icon
+                [matBadge]="folder.shared.length"
                 *ngIf="folder.owner"
-                (click)="onClickDeleteFolder($event, folder)"
                 color="primary"
-                >clear</mat-icon
+                class="mb-1"
+                [class.hidden]="!folder['isHover']"
+                (click)="onClickShare('folder', folder)"
               >
+                share_outline
+              </mat-icon>
             </div>
-          </div>
-
-          <img [src]="getFolderIcon('folder')" width="100" />
-          <div class="share">
-            <mat-icon
-              [matBadge]="folder.shared.length"
-              *ngIf="folder.owner"
-              color="primary"
-              class="mb-1"
-              [class.hidden]="!folder['isHover']"
-              (click)="onClickShare('folder', folder)"
-            >
-              share_outline
-            </mat-icon>
-          </div>
-          <div class="name">
-            <mat-icon
-              (click)="onClickSetFavoriteFolder($event, folder)"
-              color="primary"
-              >{{ folder.favorite ? 'favorite' : 'favorite_outline'}}</mat-icon
-            >
-            <span [matTooltip]="folder.name">{{ folder.name }}</span>
+            <div class="name">
+              <mat-icon
+                (click)="onClickSetFavoriteFolder($event, folder)"
+                color="primary"
+                >{{ folder.favorite ? 'favorite' : 'favorite_outline'}}</mat-icon
+              >
+              <span [matTooltip]="folder.name">{{ folder.name }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div (mouseover)="document['isHover'] = true" (mouseout)="document['isHover'] = false" *ngFor="let document of documents">
       <div
-        class="entity"
-        [class.cursor-default]="document.extension !== 'doc'"
-        [class.selected]="selectedDocument && selectedDocument.id === document.id"
-        (click)="onClickDocument(document)"
-        (dblclick)="onDblClickDocument(document)"
+        [dndDraggable]="{ type: 'document', id: document.id }"
+        [dndDisableIf]="disableActions"
+        (mouseover)="document['isHover'] = true"
+        (mouseout)="document['isHover'] = false"
+        *ngFor="let document of documents"
       >
-        <div class="entity-content">
-          <div class="actions" [class.hidden]="!document['isHover']">
-            <div class="download">
-              <mat-icon
-                (click)="onClickDownloadDocument($event, document)"
-                color="primary"
-                >download</mat-icon
-              >
-            </div>
+        <div
+          class="entity"
+          [class.cursor-default]="document.extension !== 'doc'"
+          [class.selected]="selectedDocument && selectedDocument.id === document.id"
+          (click)="onClickDocument(document)"
+          (dblclick)="onDblClickDocument(document)"
+        >
+          <div class="entity-content">
+            <div class="actions" [class.hidden]="!document['isHover']">
+              <div class="download">
+                <mat-icon
+                  (click)="onClickDownloadDocument($event, document)"
+                  color="primary"
+                  >download</mat-icon
+                >
+              </div>
 
-            <div class="delete">
-              <mat-icon
-                *ngIf="document.owner"
-                (click)="onClickDeleteDocument($event, document)"
-                color="primary"
-                >clear</mat-icon
-              >
+              <div class="delete">
+                <mat-icon
+                  *ngIf="document.owner"
+                  (click)="onClickDeleteDocument($event, document)"
+                  color="primary"
+                  >clear</mat-icon
+                >
+              </div>
             </div>
-          </div>
-          <img [src]="getFileIcon(document.extension)" width="100" />
-          <div class="share">
-            <mat-icon
-              [matBadge]="document.shared.length"
-              *ngIf="document.owner"
-              color="primary"
-              class="mb-1"
-              [class.hidden]="!document['isHover']"
-              (click)="onClickShare('document', document)"
-            >
-              share_outline
-            </mat-icon>
-          </div>
-          <div class="name">
-            <mat-icon
-              (click)="onClickSetFavoriteDocument($event, document)"
-              color="primary"
-              >{{ document.favorite  ? 'favorite' :  'favorite_outline'}}</mat-icon
-            >
-            <span matTooltip="{{ document.name }}.{{ document.extension }}">
-              {{ document.name }}.{{ document.extension }}
-            </span>
+            <img [src]="getFileIcon(document?.extension)" width="100" />
+            <div class="share">
+              <mat-icon
+                [matBadge]="document.shared.length"
+                *ngIf="document.owner"
+                color="primary"
+                class="mb-1"
+                [class.hidden]="!document['isHover']"
+                (click)="onClickShare('document', document)"
+              >
+                share_outline
+              </mat-icon>
+            </div>
+            <div class="name">
+              <mat-icon
+                (click)="onClickSetFavoriteDocument($event, document)"
+                color="primary"
+                >{{ document.favorite  ? 'favorite' :  'favorite_outline'}}</mat-icon
+              >
+              <span matTooltip="{{ document.name }}.{{ document.extension }}">
+                {{ document.name }}.{{ document.extension }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div matTooltip="Добавить файл или папку" *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
-      <mat-icon color="primary">add</mat-icon>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="onClickCreateDocument()">
-          Создать документ
-        </button>
-        <button mat-menu-item (click)="onClickCreateFolder()">
-          Создать папку
-        </button>
-      </mat-menu>
-    </div>
+      <div matTooltip="Добавить файл или папку" *ngIf="!disableActions" class="add" [matMenuTriggerFor]="menu">
+        <mat-icon color="primary">add</mat-icon>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="onClickCreateDocument()">
+            Создать документ
+          </button>
+          <button mat-menu-item (click)="onClickCreateFolder()">
+            Создать папку
+          </button>
+        </mat-menu>
+      </div>
 
-    <div matTooltip="Загрузить файл" *ngIf="!disableActions" class="upload" (click)="fileUpload.click()">
-      <input type="file" class="file-input" (change)="onClickUploadFile($event)" #fileUpload>
-      <mat-icon color="primary">upload_file</mat-icon>
-    </div>
-  </ng-template>
+      <div matTooltip="Загрузить файл" *ngIf="!disableActions" class="upload" (click)="fileUpload.click()">
+        <input type="file" class="file-input" (change)="onClickUploadFile($event)" #fileUpload>
+        <mat-icon color="primary">upload_file</mat-icon>
+      </div>
+    </ng-template>
+  </div>
 </div>

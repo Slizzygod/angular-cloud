@@ -1,8 +1,22 @@
 import { DataTypes, Model } from "sequelize";
 import { DocumentUser } from "./document-user";
 import { Folder } from "./folder";
+import { User } from "./user";
 
 import { models } from "./sequelize";
+
+export interface DocumentsOptions {
+  id?: number;
+  name?: string;
+  root?: boolean;
+  folderId?: number;
+  destFolderId?: number;
+  extension?: string;
+  owner?: boolean;
+  favorites?: boolean;
+  user?: User;
+  buffer?: Buffer;
+}
 
 export class Document extends Model {
 

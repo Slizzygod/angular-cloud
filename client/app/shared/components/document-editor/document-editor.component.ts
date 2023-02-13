@@ -26,19 +26,17 @@ import { NotificationService } from './../../../core/services/notification.servi
 export class DocumentEditorComponent {
 
   document: Document = null;
-  parent: number = null;
   text: string = null;
 
   provider: WebrtcProvider = null;
 
   constructor(
     public dialogRef: MatDialogRef<DocumentEditorComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { document: Document, parent: number },
+    @Inject(MAT_DIALOG_DATA) public data: { document: Document },
     private notificationService: NotificationService,
     private documentsService: DocumentsService,
   ) {
     this.document = data.document;
-    this.parent = data.parent;
   }
 
   editorCreated(event: Quill): void {
@@ -52,7 +50,7 @@ export class DocumentEditorComponent {
   }
 
   onGetDocument(): void {
-    this.documentsService.getDocument(this.document.id, this.parent).subscribe({
+    this.documentsService.getDocument(this.document.id).subscribe({
       next: (text: string) => this.text = text,
       error: (error: unknown) => this.onError(error),
     })
@@ -63,7 +61,7 @@ export class DocumentEditorComponent {
       this.provider.destroy();
     }
 
-    this.documentsService.saveDocument(this.document.id, this.parent, this.text).subscribe({
+    this.documentsService.saveDocument(this.document.id, this.text).subscribe({
       next: () => this.onSavedDocument(),
       error: (error: unknown) => this.onError(error),
     })

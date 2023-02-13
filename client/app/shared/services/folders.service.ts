@@ -51,14 +51,12 @@ export class FoldersService {
     return this.http.post(`/api/folders/${id}/share`, { users });
   }
 
-  downloadFolder(id: number, parent: number): Observable<any> {
-    const params: any = {};
-
-    if (parent) {
-      params.parent = parent
-    }
-
+  downloadFolder(id: number): Observable<any> {
     return this.http.get(`/api/folders/${id}/download`, { responseType: 'blob' });
+  }
+
+  moveFolder(id: number, destFolderId: number): Observable<any> {
+    return this.http.post(`/api/folders/${id}/move`, { destFolderId });
   }
 
 }

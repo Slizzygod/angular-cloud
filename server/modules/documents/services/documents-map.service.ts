@@ -18,10 +18,12 @@ class DocumentsMapService {
     return {
       id: document.id,
       name: document.name,
+      folderId: document.folderId,
       extension: document.extension,
       owner: !!document.documentsUsers.find((el: DocumentUser) => el.userId === userId && el.owner),
+      ownerUser: document.documentsUsers.find((el: DocumentUser) => el.owner)?.user,
       shared: documentUsers.filter((el: DocumentUser) => !el.owner && el.documentId === document.id).map((el: DocumentUser) => el.userId),
-      favorite: documentUsers.find((el: DocumentUser) => el.userId === userId)?.favorite,
+      favorite: documentUsers.find((el: DocumentUser) => el.userId === userId && el.documentId === document.id)?.favorite,
       root: document.root,
       documentsUsers: document.documentsUsers || [],
       createdAt: document.createdAt,

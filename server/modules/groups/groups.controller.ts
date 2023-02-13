@@ -35,10 +35,7 @@ export class GroupsCtrl {
 
     try {
       const group = await Group.create({ name, shortName, note });
-
       const folder = await foldersService.createFolder({ name, root: true, user, group: group.id });
-
-      await FolderUser.create({ userId: user.id, folderId: folder.id, owner: true });
 
       res.json(group);
     } catch (error) {

@@ -2,16 +2,55 @@ import * as fsPromises from 'fs/promises';
 import * as fs from 'fs';
 import * as fsFinder from 'fs-finder';
 
+import { Op } from 'sequelize';
+
 import { config } from '../../../core/config/config';
 
+import { Folder, FoldersOptions, FolderUser, User } from './../../../core/models';
+
 import { logsService } from '../../logs/logs.service';
-import { Folder, FolderUser, User } from './../../../core/models';
 import { foldersMapService } from './folders-map.service';
 
 class FoldersService {
 
-  async getFolderPath(user: User, folderId?: number): Promise<string> {
-    let folderPath = `${config.rootDir}/${user.username}`;
+  async getFolders(data: FoldersOptions): Promise<any> {
+    const { user, parentId, owner, favorites } = data;
+
+    let folderCondition: any = { root: true };
+    let folderUserCondition: any = { userId: user.id };
+
+    if (owner) {
+      folderUserCondition.owner = true;
+    }
+
+    if (!favorites && !parentId && !owner) {
+      folderUserCondition.owner = { [Op.or]: [false, null] };
+    }
+
+    if (favorites) {
+      folderCondition = {};
+      folderUserCondition.favorite = true;
+    }
+
+    if (!isNaN(parentId)) {
+      folderUserCondition = {};
+      folderCondition = { parentId };
+    }
+
+    return await Folder.findAll({
+      where: folderCondition,
+      include: [
+        {
+          model: FolderUser,
+          as: 'foldersUsers',
+          where: folderUserCondition
+        }
+      ]
+    });
+  }
+
+  async getFolderPath(folderId: number, username?: string): Promise<string> {
+    let folderPath = `${config.rootDir}/${username}`
 
     if (folderId) {
       const folderUser = await FolderUser.findOne({
@@ -55,11 +94,12 @@ class FoldersService {
     return folderMap;
   }
 
-  async createFolder(data: ActionsFolderOptions): Promise<Folder> {
+  async createFolder(data: FoldersOptions): Promise<Folder> {
     const { name, root, parentId, user, group } = data;
 
-    const folder = await Folder.create({ name, root, parentId: parentId || null, group: group || null });
-    const folderDir = await this.getFolderPath(user, parentId);
+    const folder = await Folder.create({ name, root, parentId, group });
+    const folderUsers = await FolderUser.create({ userId: user.id, folderId: folder.id });
+    const folderDir = await this.getFolderPath(parentId, user.username);
 
     await fsPromises.mkdir(`${folderDir}/${name}_${folder.id}`);
 
@@ -74,7 +114,7 @@ class FoldersService {
     return folder;
   }
 
-  async updateFolder(data: ActionsFolderOptions): Promise<number> {
+  async updateFolder(data: FoldersOptions): Promise<number> {
     const { id, name, user, group } = data;
 
     let condition: any = { id };
@@ -108,7 +148,7 @@ class FoldersService {
     return result[1][0].id;
   }
 
-  async deleteFolder(data: ActionsFolderOptions): Promise<any> {
+  async deleteFolder(data: FoldersOptions): Promise<any> {
     const { id, user, group } = data;
 
     let condition: any = { id };
@@ -118,7 +158,7 @@ class FoldersService {
     }
 
     const folder = await Folder.findOne({ where: { id: id || group } });
-    const folderPath = await this.getFolderPath(user, folder.id);
+    const folderPath = await this.getFolderPath(folder.id);
 
     await Promise.all([
       Folder.destroy({ where: condition }),
@@ -129,6 +169,17 @@ class FoldersService {
         folder,
       }),
       fsPromises.rmdir(folderPath, { recursive: true }),
+    ]);
+  }
+
+  async moveFolder(id: number, destFolderId: number): Promise<any> {
+    const folder = await Folder.findOne({ where: { id } });
+    const folderPath = await this.getFolderPath(id);
+    const destFolderPath = await this.getFolderPath(destFolderId);
+
+    await Promise.all([
+      fsPromises.rename(folderPath, `${destFolderPath}/${folder.name}_${folder.id}`),
+      Folder.update({ root: false, parentId: destFolderId }, { where: { id } })
     ]);
   }
 
@@ -153,15 +204,6 @@ class FoldersService {
     }
   }
 
-}
-
-interface ActionsFolderOptions {
-  id?: number
-  user?: User;
-  name?: string;
-  root?: boolean;
-  parentId?: number;
-  group?: number;
 }
 
 export const foldersService = new FoldersService();

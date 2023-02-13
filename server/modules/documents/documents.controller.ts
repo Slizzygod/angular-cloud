@@ -3,93 +3,24 @@ import * as fsPromises from 'fs/promises';
 import * as mime from 'mime-types';
 
 import { Request, Response } from 'express';
-import { Op } from 'sequelize';
 
-import { Document, DocumentUser } from '../../core/models';
+import { DocumentUser } from '../../core/models';
+
 import { usersService } from '../users/users.service';
 import { documentsMapService, documentsService } from './services';
 import { foldersService } from '../folders/services';
 
 export class DocumentsCtrl {
 
-  async getDocument(req: Request, res: Response): Promise<any> {
-    const id = Number(req.params['id']);
-    const folderId = Number(req.query['folderId']);
-
-    const user = usersService.getCurrentSessionUser(req);
-
-    try {
-      const document = await documentsService.getDocument(id, user.id);
-      const owner = document.documentsUsers.find((el: DocumentUser) => el.owner);
-      const folderPath = await foldersService.getFolderPath(owner.user, folderId);
-      const data = await fsPromises.readFile(`${folderPath}/${document.name}.${document.extension}`);
-
-      res.json(data.toString());
-    } catch (error) {
-      console.log(error)
-      res.status(500).send(error.message);
-    }
-  }
-
-  async saveDocument(req: Request, res: Response): Promise<any> {
-    const id = Number(req.params['id']);
-    const folderId = Number(req.query['folderId']);
-    const text = req.body.text;
-
-    const user = usersService.getCurrentSessionUser(req);
-
-    try {
-      const document = await documentsService.getDocument(id, user.id);
-      const owner = document.documentsUsers.find((el: DocumentUser) => el.owner);
-      const folderPath = await foldersService.getFolderPath(owner.user, folderId);
-      const data = await fsPromises.writeFile(`${folderPath}/${document.name}.${document.extension}`, text);
-
-      res.json({ id });
-    } catch (error) {
-      console.log(error)
-      res.status(500).send(error.message);
-    }
-  }
-
   async getDocuments(req: Request, res: Response): Promise<any> {
-    const owner = Boolean(req.query['owner']);
-    const favorites = Boolean(req.query['favorites']);
-    const folderId = Number(req.query['folderId']);
+    const owner = Boolean(req.query.owner);
+    const favorites = Boolean(req.query.favorites);
+    const folderId = Number(req.query.folderId);
 
     const user = usersService.getCurrentSessionUser(req);
 
-    let documentCondition: any = { root: true };
-    let documentUserCondition: any = { userId: user.id };
-
-    if (!isNaN(folderId)) {
-      documentCondition = { folderId };
-    }
-
-    if (owner) {
-      documentUserCondition.owner = true
-    }
-
-    if (!favorites && !folderId && !owner) {
-      documentUserCondition.owner = { [Op.or]: [false, null] };
-    }
-
-    if (favorites) {
-      documentCondition = {};
-      documentUserCondition.favorite = true;
-    }
-
     try {
-      const documents = await Document.findAll({
-        where: documentCondition,
-        include: [
-          {
-            model: DocumentUser,
-            as: 'documentsUsers',
-            where: documentUserCondition
-          }
-        ]
-      });
-
+      const documents = await documentsService.getDocuments({ owner, favorites, folderId, user });
       const documentsMap = await documentsMapService.getDocumentsMap(documents, user.id);
 
       res.send(documentsMap);
@@ -98,13 +29,48 @@ export class DocumentsCtrl {
     }
   }
 
-  async createDocument(req: Request, res: Response): Promise<any> {
+  async getDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+
     const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const document = await documentsService.getDocument(id, user.id);
+      const folderPath = await foldersService.getFolderPath(document.folderId, document.ownerUser.username);
+      const data = await fsPromises.readFile(`${folderPath}/${document.name}.${document.extension}`);
+
+      res.json(data.toString());
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async saveDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+    const text = req.body.text;
+
+    const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const document = await documentsService.getDocument(id, user.id);
+      const folderPath = await foldersService.getFolderPath(document.folderId, document.ownerUser.username);
+
+      await fsPromises.writeFile(`${folderPath}/${document.name}.${document.extension}`, text);
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async createDocument(req: Request, res: Response): Promise<any> {
     const name = req.body.name;
     const root = Boolean(req.body.root);
     const folderId = Number(req.body.folderId);
     const extension = req.body.extension;
     const data = { name, root, folderId: null, extension };
+
+    const user = usersService.getCurrentSessionUser(req);
 
     if (!name) {
       return res.status(412).send('Folder name is required');
@@ -119,7 +85,13 @@ export class DocumentsCtrl {
     }
 
     try {
-      const document = await documentsService.createDocument(data.name, data.root, data.folderId, data.extension, user);
+      const document = await documentsService.createDocument({
+        name: data.name,
+        root: data.root,
+        folderId: data.folderId,
+        extension: data.extension,
+        user
+      });
 
       res.send(document);
     } catch (error) {
@@ -127,31 +99,13 @@ export class DocumentsCtrl {
     }
   }
 
-  async updateDocument(req: Request, res: Response): Promise<any> {
-    const user = usersService.getCurrentSessionUser(req);
-    const id = Number(req.params['id']);
-    const name = req.body.name;
-
-    if (!name) {
-      return res.status(412).send('Document name is required');
-    }
-
-    try {
-      await Document.update({ name }, { where: { id, userId: user.id } });
-
-      res.json({ id });
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  }
-
   async deleteDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+
     const user = usersService.getCurrentSessionUser(req);
-    const id = Number(req.params['id']);
-    const parent = Number(req.query['parent']);
 
     try {
-      documentsService.deleteDocument(id, parent, user);
+      await documentsService.deleteDocument(id, user);
 
       res.json({ id });
     } catch (error) {
@@ -160,8 +114,9 @@ export class DocumentsCtrl {
   }
 
   async setDocumentFavorite(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+
     const user = usersService.getCurrentSessionUser(req);
-    const id = Number(req.params['id']);
 
     try {
       const document = await DocumentUser.findOne({ where: { userId: user.id, documentId: id } });
@@ -179,7 +134,7 @@ export class DocumentsCtrl {
   }
 
   async shareDocument(req: Request, res: Response): Promise<any> {
-    const id = Number(req.params['id']);
+    const id = Number(req.params.id);
     const users = req.body.users || [];
 
     try {
@@ -196,12 +151,13 @@ export class DocumentsCtrl {
   }
 
   async uploadDocument(req: Request, res: Response): Promise<any> {
-    const user = usersService.getCurrentSessionUser(req);
-    const parent = Number(req.query['parent']);
+    const folderId = Number(req.query.folderId);
     const file = req['files'].thumbnail;
 
+    const user = usersService.getCurrentSessionUser(req);
+
     try {
-      const folder = await documentsService.saveDocument(file.data, file.name, parent, user);
+      const folder = await documentsService.uploadDocument({ buffer: file.data, name: file.name, folderId, user });
 
       res.json(folder)
     } catch (error) {
@@ -210,17 +166,13 @@ export class DocumentsCtrl {
   }
 
   async downloadDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+
     const user = usersService.getCurrentSessionUser(req);
-    const parent = Number(req.query['parent']);
-    const id = Number(req.params['id']);
 
     try {
-      const folderPath = await foldersService.getFolderPath(user, parent);
       const document = await documentsService.getDocument(id, user.id);
-
-      if (!document.shared.includes(user.id) && !document.owner) {
-        return res.status(403).send('Not permitted to download');
-      }
+      const folderPath = await foldersService.getFolderPath(document.folderId, document.ownerUser.username);
 
       const rs = fs.createReadStream(`${folderPath}/${document.name}.${document.extension}`);
 
@@ -228,6 +180,25 @@ export class DocumentsCtrl {
       res.set('Content-Type', mime.lookup(document.extension));
 
       rs.pipe(res);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async moveDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+    const destFolderId = Number(req.body.destFolderId);
+
+    const user = usersService.getCurrentSessionUser(req);
+
+    if (isNaN(destFolderId)) {
+      return res.status(412).send('Destination folder id required');
+    }
+
+    try {
+      await documentsService.moveDocument({ id, destFolderId, user });
+
+      res.json({ id });
     } catch (error) {
       res.status(500).send(error.message);
     }

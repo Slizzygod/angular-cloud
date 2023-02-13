@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Folder, Document } from '@app/core/models';
-import { DocumentsService, FoldersService, utilsService } from '@app/shared/services';
+import { DocumentsService, FoldersService } from '@app/shared/services';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -17,13 +17,6 @@ export class FavoritesComponent implements OnInit {
     private foldersService: FoldersService,
     private documentsService: DocumentsService
   ) { }
-
-  getInfo(): string {
-    const folders = utilsService.getQuantitativeDeclinationString(this.folders.length, ['папка', 'папки', 'папок']);
-    const document = utilsService.getQuantitativeDeclinationString(this.documents.length, ['документ', 'документа', 'документов']);
-
-    return `${folders}, ${document}`;
-  }
 
   ngOnInit(): void {
     this.onGetData();

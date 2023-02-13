@@ -12,26 +12,6 @@ export class DocumentsService {
 
   constructor(private http: HttpClient) {}
 
-  getDocument(id: number, parent: number): Observable<any> {
-    const params: any = {};
-
-    if (parent) {
-      params.parent = parent
-    }
-
-    return this.http.get(`/api/documents/${id}`, { params });
-  }
-
-  saveDocument(id: number, parent: number, text: string): Observable<any> {
-    const params: any = {};
-
-    if (parent) {
-      params.parent = parent
-    }
-
-    return this.http.post(`/api/documents/${id}`, { text }, { params });
-  }
-
   getDocuments(data: DocumentOptions = {}): Observable<any> {
     const { folderId, favorites, owner } = data;
 
@@ -52,6 +32,14 @@ export class DocumentsService {
     return this.http.get('/api/documents', { params });
   }
 
+  getDocument(id: number): Observable<any> {
+    return this.http.get(`/api/documents/${id}`);
+  }
+
+  saveDocument(id: number, text: string): Observable<any> {
+    return this.http.post(`/api/documents/${id}`, { text });
+  }
+
   createDocument(document: Document): Observable<any> {
     return this.http.post('/api/documents', document);
   }
@@ -60,14 +48,8 @@ export class DocumentsService {
     return this.http.put(`/api/documents/${document.id}`, document);
   }
 
-  deleteDocument(id: number, parent: number): Observable<any> {
-    const params: any = {};
-
-    if (parent) {
-      params.parent = parent
-    }
-
-    return this.http.delete(`/api/documents/${id}`, { params });
+  deleteDocument(id: number): Observable<any> {
+    return this.http.delete(`/api/documents/${id}`);
   }
 
   setDocumentFavorite(id: number): Observable<any> {
@@ -78,24 +60,22 @@ export class DocumentsService {
     return this.http.post(`/api/documents/${id}/share`, { users });
   }
 
-  uploadDocument(document: FormData, parent: number): Observable<any> {
+  uploadDocument(document: FormData, folderId: number): Observable<any> {
     const params: any = {};
 
-    if (parent) {
-      params.parent = parent
+    if (folderId) {
+      params.folderId = folderId;
     }
 
     return this.http.post(`/api/documents/upload`, document, { params });
   }
 
-  downloadDocument(id: number, parent: number): Observable<any> {
-    const params: any = {};
+  downloadDocument(id: number): Observable<any> {
+    return this.http.get(`/api/documents/${id}/download`, { responseType: 'blob' });
+  }
 
-    if (parent) {
-      params.parent = parent
-    }
-
-    return this.http.get(`/api/documents/${id}/download`, { params, responseType: 'blob' });
+  moveDocument(id: number, destFolderId: number): Observable<any> {
+    return this.http.post(`/api/documents/${id}/move`, { destFolderId });
   }
 
 }

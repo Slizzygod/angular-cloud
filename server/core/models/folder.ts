@@ -1,7 +1,19 @@
 import { DataTypes, Model } from "sequelize";
 import { FolderUser } from "./folder-user";
+import { User } from "./user";
 
 import { models } from "./sequelize";
+
+export interface FoldersOptions {
+  id?: number
+  user?: User;
+  name?: string;
+  root?: boolean;
+  parentId?: number;
+  group?: number;
+  owner?: boolean;
+  favorites?: boolean;
+}
 
 export class Folder extends Model {
   ['setUsers']: any;

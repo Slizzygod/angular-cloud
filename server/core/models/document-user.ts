@@ -16,6 +16,7 @@ export class DocumentUser extends Model {
   public favorite: boolean;
 
   document?: Document;
+  user?: User;
 }
 
 DocumentUser.init({

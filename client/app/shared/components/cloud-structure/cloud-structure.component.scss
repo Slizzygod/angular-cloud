@@ -6,9 +6,19 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
 
 .wrapper {
   display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.content {
+  display: flex;
   align-items: center;
   gap: 1em;
   flex-wrap: wrap;
+}
+
+.statistics {
+  color: #ced4da;
 }
 
 .entity {
