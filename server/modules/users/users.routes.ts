@@ -13,6 +13,7 @@ export function setUsersRoutes(router: express.Router) {
   router.route('/users/:id/block').post(guard.check([ PERMISSION_ADMIN ]), usersCtrl.blockUser);
   router.route('/users/:id/unlock').post(guard.check([ PERMISSION_ADMIN ]), usersCtrl.unlockUser);
 
+  router.route('/users/statistics').get(usersCtrl.getUserStatistics);
   router.route('/users/settings').get(usersCtrl.getUserSettings);
   router.route('/users/settings').post(usersCtrl.updateUserSettings);
 

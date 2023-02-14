@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
+
 import { NextFunction, Request, Response } from 'express';
 
 import { User } from '../../core/models';
@@ -104,11 +105,24 @@ export class UsersCtrl {
     }
   }
 
+  async getUserStatistics(req: Request, res: Response): Promise<any> {
+    const user = usersService.getCurrentSessionUser(req);
+
+    try {
+      const statistics = await usersService.getUserStatistics(user.id);
+
+      res.json(statistics);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
   async updateUser(req: Request, res: Response): Promise<any> {
     const id = req.params['id'];
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const patronymicName = req.body.patronymicName;
+    const space = req.body.space;
 
     try {
       const user = await User.findOne({ where: { id } });
@@ -117,7 +131,7 @@ export class UsersCtrl {
         return res.status(404).send('User not found');
       }
 
-      await user.update({ firstName, lastName, patronymicName });
+      await user.update({ firstName, lastName, patronymicName, space });
 
       res.json({ id });
     } catch (error) {

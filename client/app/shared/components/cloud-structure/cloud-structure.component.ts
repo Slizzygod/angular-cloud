@@ -1,16 +1,24 @@
 import { saveAs } from 'file-saver';
 
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DndDropEvent } from 'ngx-drag-drop';
-import { Folder, Document } from '@app/core/models';
+import { Folder, Document, UserStatistics } from '@app/core/models';
 import { NotificationService } from '@app/core/services';
 import { DocumentsService, FoldersService, utilsService } from '@app/shared/services';
+import { UsersService } from '@app/components/users/services';
 import { ShareComponent } from '../share/share.component';
 import { DocumentEditorComponent } from './../document-editor/document-editor.component';
 import { CLOUD_STRUCTURE_DROP_EVENTS_TYPES, CLOUD_STRUCTURE_MODES } from './cloud-structure.config';
+
+/**
+ * переделать favourite = true на моды
+ * моды для cloud-structure вынести в константы
+ * покрыть правами методы на бэке
+ * добавить изменение названия файлов и папок
+ */
 
 import {
   getMaterialFileIcon,
@@ -22,7 +30,7 @@ import {
   templateUrl: './cloud-structure.component.html',
   styleUrls: ['./cloud-structure.component.scss'],
 })
-export class CloudStructureComponent implements OnChanges, OnDestroy {
+export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
 
   private subscriptions = new Subscription();
 
@@ -35,6 +43,7 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
   selectedFolder: Folder = null;
   selectedDocument: Document = null;
   nestedFolders: Folder[] = [];
+  userStatistics: UserStatistics = null;
   isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
@@ -43,12 +52,13 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
   constructor(
     private foldersService: FoldersService,
     private documentsService: DocumentsService,
+    private userService: UsersService,
     private notificationService: NotificationService,
     public dialog: MatDialog,
     private router: Router
   ) {}
 
-  get statistics(): string {
+  get structureStatistics(): string {
     const folders = utilsService.getQuantitativeDeclinationString(this.folders?.length, ['папка', 'папки', 'папок']);
     const document = utilsService.getQuantitativeDeclinationString(this.documents?.length, ['документ', 'документа', 'документов']);
 
@@ -68,6 +78,19 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
       this.foldersService.getNestedFolders(Number(changes.parent.currentValue)).subscribe({
         next: (nestedFolders: Folder[]) => this.nestedFolders = nestedFolders,
         error: (error: Error) => this.onError(error)
+      });
+    }
+  }
+
+  ngOnInit(): void {
+    this.onGetUserStatistics();
+  }
+
+  onGetUserStatistics(): void {
+    if (this.mode === 'personal') {
+      this.userService.getUserStatistics().subscribe({
+        next: (statistics: UserStatistics) => this.userStatistics = statistics,
+        error: (error: unknown) => this.onError(error)
       });
     }
   }
@@ -153,6 +176,8 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
     this.documents = this.documents.filter((el: Document) => Number(el.id) !== Number(document.id));
 
     this.notificationService.success('Файл успешно удален');
+
+    this.onGetUserStatistics();
   }
 
   onClickCreateFolder(): void {
@@ -217,6 +242,8 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
     this.folders = this.folders.filter((el: Folder) => Number(el.id) !== Number(folder.id));
 
     this.notificationService.success('Папка успешно удалена');
+
+    this.onGetUserStatistics();
   }
 
   onClickShare(mode: 'folder' | 'document', entity: Folder | Document): void {
@@ -276,6 +303,8 @@ export class CloudStructureComponent implements OnChanges, OnDestroy {
     this.documents.push(document);
 
     this.notificationService.success('Документ успешно загружен');
+
+    this.onGetUserStatistics();
   }
 
   onClickDownloadFolder(event: Event, folder: Folder): void {

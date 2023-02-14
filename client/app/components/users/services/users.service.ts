@@ -20,4 +20,8 @@ export class UsersService {
     return this.http.get('/api/groups');
   }
 
+  getUserStatistics(): Observable<any> {
+    return this.http.get('/api/users/statistics');
+  }
+
 }

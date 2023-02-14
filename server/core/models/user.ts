@@ -10,6 +10,7 @@ export class User extends Model {
   public patronymicName: string | undefined;
   public blocked: boolean | undefined;
   public permissions: string[] | undefined;
+  public space: number;
   public username!: string;
   public password!: string;
 
@@ -44,6 +45,10 @@ User.init({
   },
   permissions: {
     type: DataTypes.JSON
+  },
+  space: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1
   }
 }, {
   underscored: true,

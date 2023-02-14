@@ -26,6 +26,7 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DndModule } from 'ngx-drag-drop';
 import { QuillModule } from 'ngx-quill';
 
@@ -61,6 +62,7 @@ import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from
     MatBadgeModule,
     MatTableModule,
     MatSortModule,
+    MatProgressBarModule,
     DndModule,
     QuillModule
   ],
@@ -97,6 +99,7 @@ import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from
     MatBadgeModule,
     MatTableModule,
     MatSortModule,
+    MatProgressBarModule,
     CloudStructureComponent,
     DocumentEditorComponent,
     ShareComponent,

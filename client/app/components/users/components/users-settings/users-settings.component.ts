@@ -21,6 +21,7 @@ export class UsersSettingsComponent implements OnChanges {
     firstName: new FormControl(''),
     lastName: new FormControl(''),
     patronymicName: new FormControl(''),
+    space: new FormControl()
   });
 
   constructor(
@@ -43,6 +44,7 @@ export class UsersSettingsComponent implements OnChanges {
       firstName: user.firstName,
       lastName: user.lastName,
       patronymicName: user.patronymicName,
+      space: user.space,
     })
   }
 
@@ -99,7 +101,8 @@ export class UsersSettingsComponent implements OnChanges {
       id: this.selectedUser.id,
       firstName: this.form.get('firstName').value,
       lastName: this.form.get('lastName').value,
-      patronymicName: this.form.get('patronymicName').value
+      patronymicName: this.form.get('patronymicName').value,
+      space: this.form.get('space').value,
     };
 
     this.usersSettingsService.updateUser(user).subscribe({

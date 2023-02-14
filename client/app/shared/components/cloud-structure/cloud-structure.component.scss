@@ -177,6 +177,20 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   cursor: inherit !important;
 }
 
+.space-result {
+  width: 220px;
+  border: solid 1px mat.get-color-from-palette($my-palette, 500);
+  border-radius: 1em;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-weight: bold;
+  position: fixed;
+  bottom: 2em;
+  right: 2em;
+}
+
 @media (max-width: 750px) {
   .wrapper {
     justify-content: center;

@@ -158,6 +158,12 @@ export class DocumentsCtrl {
     const user = usersService.getCurrentSessionUser(req);
 
     try {
+      const freeSpace = await foldersService.checkFreeSpace(user, folderId, file.size);
+
+      if (!freeSpace) {
+        return res.status(400).send('No free space, contact your administrator');
+      }
+
       const folder = await documentsService.uploadDocument({ buffer: file.data, name: file.name, folderId, user });
 
       res.json(folder)

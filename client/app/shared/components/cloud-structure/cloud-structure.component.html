@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="statistics" *ngIf="folders?.length > 0 || documents?.length > 0">{{ statistics }}</div>
+    <div class="statistics" *ngIf="folders?.length > 0 || documents?.length > 0">{{ structureStatistics }}</div>
   </div>
 
   <div class="content">
@@ -161,4 +161,9 @@
       </div>
     </ng-template>
   </div>
+</div>
+
+<div *ngIf="mode === 'personal' && userStatistics" class="space-result">
+  <span>Занято {{userStatistics.size}} из {{userStatistics.space}}ГБ</span>
+  <mat-progress-bar mode="determinate" [value]="userStatistics.result"></mat-progress-bar>
 </div>

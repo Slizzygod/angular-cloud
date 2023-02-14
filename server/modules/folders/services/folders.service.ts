@@ -230,6 +230,56 @@ class FoldersService {
     }
   }
 
+  async getFolderSize(username: string): Promise<any> {
+    const files = await this.getFolderFiles(`${config.rootDir}/${username}`, []);
+
+    let totalSize = 0
+
+    for (const file of files) {
+      const statistic = await fsPromises.stat(file);
+
+      totalSize += statistic.size;
+    }
+
+    return totalSize;
+  }
+
+  async getFolderFiles(folderPath: string, arrayOfFiles: string[]): Promise<any> {
+    const files = await fsPromises.readdir(folderPath)
+
+    for (const file of files) {
+      if (fs.statSync(`${folderPath}/${file}`).isDirectory()) {
+        arrayOfFiles = await this.getFolderFiles(`${folderPath}/${file}`, arrayOfFiles)
+      } else {
+        arrayOfFiles.push(`${folderPath}/${file}`)
+      }
+    }
+
+    return arrayOfFiles;
+  }
+
+  async checkFreeSpace(user: User, folderId: number, fileSize: number = 0): Promise<any> {
+    let username = user.username;
+
+    if (folderId) {
+      const ownerFolder = await FolderUser.findOne({
+        where: { folderId, owner: true },
+        include: [ { model: User, as: 'user', attributes: ['username'] } ]
+      });
+
+      if (!ownerFolder) {
+        throw new Error('Folder owner is not defined');
+      }
+
+      username = ownerFolder.user.username;
+    }
+
+    const needlyUser = await User.findOne({ where: { username }, attributes: ['space'] });
+    const folderSize = await this.getFolderSize(username);
+
+    return (folderSize + fileSize) < (needlyUser.space * 1000 * 1000 * 1000);
+  }
+
 }
 
 export const foldersService = new FoldersService();
