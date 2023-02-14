@@ -83,10 +83,12 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
 .name {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
   gap: 0.3em;
 
   span {
-    width: 100px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
