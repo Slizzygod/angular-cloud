@@ -1,7 +1,7 @@
 import * as archiver from 'archiver';
 
 import { Request, Response } from 'express';
-import { FolderUser } from '../../core/models';
+import { Folder, FolderUser } from '../../core/models';
 
 import { usersService } from '../users/users.service';
 import { foldersMapService, foldersService } from './services';
@@ -11,12 +11,13 @@ export class FoldersCtrl {
   async getFolders(req: Request, res: Response): Promise<any> {
     const parentId = Number(req.query.parentId);
     const favorites = Boolean(req.query.favorites);
+    const joint = Boolean(req.query.joint);
     const owner = Boolean(req.query.owner);
 
     const user = usersService.getCurrentSessionUser(req);
 
     try {
-      const folders = await foldersService.getFolders({ owner, favorites, parentId, user })
+      const folders = await foldersService.getFolders({ owner, favorites, joint, parentId, user })
       const foldersMap = await foldersMapService.getFoldersMap(folders, user.id);
 
       res.send(foldersMap);
@@ -29,10 +30,18 @@ export class FoldersCtrl {
     const id = Number(req.params.id);
     const nestedFolders = [];
 
+    const user = usersService.getCurrentSessionUser(req);
+
     try {
       await foldersService.getNestedFolders(id, nestedFolders);
 
-      res.send(nestedFolders);
+      const index = nestedFolders.findIndex((el: Folder) => el.foldersUsers.find((el: FolderUser) => el.userId === user.id));
+
+      if (index === -1) {
+        return res.status(403).send('Permissions denied');
+      }
+
+      res.send(nestedFolders.splice(index));
     } catch (error) {
       res.status(500).send(error.message);
     }

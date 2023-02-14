@@ -8,4 +8,5 @@ export interface Folder {
   shared?: number[];
   createdAt?: string;
   updatedAt?: string;
+  foldersUsers?: any[];
 }

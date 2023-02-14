@@ -12,7 +12,7 @@ export class FoldersService {
   constructor(private http: HttpClient) {}
 
   getFolders(data: FolderOptions = {}): Observable<any> {
-    const { parentId, favorites, owner } = data;
+    const { parentId, favorites, joint, owner } = data;
 
     const params: any = {};
 
@@ -22,6 +22,10 @@ export class FoldersService {
 
     if (favorites) {
       params.favorites = favorites;
+    }
+
+    if (joint) {
+      params.joint = joint;
     }
 
     if (owner) {
@@ -68,5 +72,6 @@ export class FoldersService {
 export interface FolderOptions {
   parentId?: number;
   favorites?: boolean;
+  joint?: boolean;
   owner?: boolean;
 }

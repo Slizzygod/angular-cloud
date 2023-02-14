@@ -14,6 +14,7 @@ export interface DocumentsOptions {
   extension?: string;
   owner?: boolean;
   favorites?: boolean;
+  joint?: boolean;
   user?: User;
   buffer?: Buffer;
 }

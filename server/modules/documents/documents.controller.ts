@@ -15,12 +15,13 @@ export class DocumentsCtrl {
   async getDocuments(req: Request, res: Response): Promise<any> {
     const owner = Boolean(req.query.owner);
     const favorites = Boolean(req.query.favorites);
+    const joint = Boolean(req.query.joint);
     const folderId = Number(req.query.folderId);
 
     const user = usersService.getCurrentSessionUser(req);
 
     try {
-      const documents = await documentsService.getDocuments({ owner, favorites, folderId, user });
+      const documents = await documentsService.getDocuments({ owner, favorites, joint, folderId, user });
       const documentsMap = await documentsMapService.getDocumentsMap(documents, user.id);
 
       res.send(documentsMap);

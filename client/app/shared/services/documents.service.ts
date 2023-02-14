@@ -13,7 +13,7 @@ export class DocumentsService {
   constructor(private http: HttpClient) {}
 
   getDocuments(data: DocumentOptions = {}): Observable<any> {
-    const { folderId, favorites, owner } = data;
+    const { folderId, favorites, joint, owner } = data;
 
     const params: any = {};
 
@@ -23,6 +23,10 @@ export class DocumentsService {
 
     if (favorites) {
       params.favorites = favorites;
+    }
+
+    if (joint) {
+      params.joint = joint;
     }
 
     if (owner) {
@@ -83,5 +87,6 @@ export class DocumentsService {
 export interface DocumentOptions {
   folderId?: number;
   favorites?: boolean;
+  joint?: boolean;
   owner?: boolean;
 }

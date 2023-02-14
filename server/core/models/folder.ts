@@ -13,6 +13,7 @@ export interface FoldersOptions {
   group?: number;
   owner?: boolean;
   favorites?: boolean;
+  joint?: boolean;
 }
 
 export class Folder extends Model {

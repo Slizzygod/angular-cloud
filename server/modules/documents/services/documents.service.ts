@@ -13,7 +13,7 @@ import { DocumentUser, Document, User, DocumentsOptions } from "../../../core/mo
 class DocumentsService {
 
   async getDocuments(data: DocumentsOptions): Promise<Document[]> {
-    const { user, folderId, owner, favorites } = data;
+    const { user, folderId, owner, favorites, joint } = data;
 
     let documentCondition: any = { root: true };
     let documentUserCondition: any = { userId: user.id };
@@ -29,6 +29,10 @@ class DocumentsService {
     if (favorites) {
       documentCondition = {};
       documentUserCondition.favorite = true;
+    }
+
+    if (joint) {
+      documentCondition = {};
     }
 
     if (!isNaN(folderId)) {

@@ -24,8 +24,8 @@ export class JointComponent {
 
   onGetData(): void {
     forkJoin({
-      folders: this.foldersService.getFolders(),
-      documents: this.documentsService.getDocuments()
+      folders: this.foldersService.getFolders({ joint: true }),
+      documents: this.documentsService.getDocuments({ joint: true })
     }).subscribe({
       next: ({ folders, documents }) => this.onDataLoaded(folders, documents),
       error: (error: unknown) => this.onError(error)

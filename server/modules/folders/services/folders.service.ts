@@ -14,7 +14,7 @@ import { foldersMapService } from './folders-map.service';
 class FoldersService {
 
   async getFolders(data: FoldersOptions): Promise<any> {
-    const { user, parentId, owner, favorites } = data;
+    const { user, parentId, owner, favorites, joint } = data;
 
     let folderCondition: any = { root: true };
     let folderUserCondition: any = { userId: user.id };
@@ -32,11 +32,16 @@ class FoldersService {
       folderUserCondition.favorite = true;
     }
 
+    if (joint) {
+      folderCondition = {};
+    }
+
     if (!isNaN(parentId)) {
       folderUserCondition = {};
       folderCondition = { parentId };
     }
-
+    console.log(folderUserCondition)
+    console.log(folderCondition)
     return await Folder.findAll({
       where: folderCondition,
       include: [
@@ -50,12 +55,23 @@ class FoldersService {
   }
 
   async getNestedFolders(id: number, nested: Folder[]): Promise<any> {
-    const folder = await Folder.findOne({ where: { id }, attributes: ['name', 'id', 'parentId'] });
+    const folder = await Folder.findOne({
+      where: { id },
+      attributes: ['name', 'id', 'parentId'],
+      include: [
+        {
+          model: FolderUser,
+          as: 'foldersUsers',
+        }
+      ]
+    });
 
-    nested.unshift(folder);
+    if (folder) {
+      nested.unshift(folder);
 
-    if (folder.parentId) {
-      await this.getNestedFolders(folder.parentId, nested);
+      if (folder.parentId) {
+        await this.getNestedFolders(folder.parentId, nested);
+      }
     }
   }
 
