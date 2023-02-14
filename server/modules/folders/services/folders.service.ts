@@ -49,6 +49,16 @@ class FoldersService {
     });
   }
 
+  async getNestedFolders(id: number, nested: Folder[]): Promise<any> {
+    const folder = await Folder.findOne({ where: { id }, attributes: ['name', 'id', 'parentId'] });
+
+    nested.unshift(folder);
+
+    if (folder.parentId) {
+      await this.getNestedFolders(folder.parentId, nested);
+    }
+  }
+
   async getFolderPath(folderId: number, username?: string): Promise<string> {
     let folderPath = `${config.rootDir}/${username}`
 

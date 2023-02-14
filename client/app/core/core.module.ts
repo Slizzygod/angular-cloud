@@ -20,8 +20,8 @@ export function tokenGetter() {
 
 @NgModule({
   imports: [
-    RouterModule,
     CommonModule,
+    RouterModule,
     HttpClientModule,
 
     StoreModule.forRoot(reducers, { metaReducers, runtimeChecks: { strictStateImmutability: true, strictActionImmutability: true } }),

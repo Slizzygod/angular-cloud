@@ -131,6 +131,48 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   }
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1em;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  color: #ced4da;
+  flex-wrap: wrap;
+
+  &-element {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
+  &-active {
+    color: mat.get-color-from-palette($my-palette, 500) !important;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    text-decoration: none;
+    color: #ced4da;
+    max-width: 135px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      color: mat.get-color-from-palette($my-palette, 500);
+    }
+  }
+}
+
 .cursor-default {
   cursor: inherit !important;
 }

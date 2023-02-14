@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -22,7 +22,7 @@ import {
   templateUrl: './cloud-structure.component.html',
   styleUrls: ['./cloud-structure.component.scss'],
 })
-export class CloudStructureComponent implements OnDestroy {
+export class CloudStructureComponent implements OnChanges, OnDestroy {
 
   private subscriptions = new Subscription();
 
@@ -34,6 +34,7 @@ export class CloudStructureComponent implements OnDestroy {
 
   selectedFolder: Folder = null;
   selectedDocument: Document = null;
+  nestedFolders: Folder[] = [];
   isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
@@ -60,6 +61,15 @@ export class CloudStructureComponent implements OnDestroy {
 
   getDocumentFromList(id: number): Document {
     return this.documents.find((el: Document) => Number(el.id) === Number(id));
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes?.parent?.currentValue) {
+      this.foldersService.getNestedFolders(Number(changes.parent.currentValue)).subscribe({
+        next: (nestedFolders: Folder[]) => this.nestedFolders = nestedFolders,
+        error: (error: Error) => this.onError(error)
+      });
+    }
   }
 
   onClickDocument(document: Document): void {

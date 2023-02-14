@@ -1,5 +1,21 @@
 <div class="wrapper">
-  <div class="statistics" *ngIf="folders?.length > 0 || documents?.length > 0">{{ statistics }}</div>
+  <div class="header">
+    <div class="breadcrumbs" [class.hidden]="nestedFolders.length === 0">
+      <a routerLink="/cloud">
+        <mat-icon>home</mat-icon>
+      </a>
+
+      <div *ngFor="let folder of nestedFolders" class="breadcrumbs-element">
+        <mat-icon>arrow_right</mat-icon>
+        <a [class.breadcrumbs-active]="folder.id == parent" [routerLink]="['/cloud/folders', folder.id]">
+          <mat-icon>folder</mat-icon>
+          <span>{{ folder.name }}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="statistics" *ngIf="folders?.length > 0 || documents?.length > 0">{{ statistics }}</div>
+  </div>
 
   <div class="content">
     <div class="empty-data" *ngIf="disableActions && folders.length === 0 && documents.length === 0; else ready">

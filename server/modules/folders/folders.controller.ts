@@ -25,6 +25,19 @@ export class FoldersCtrl {
     }
   }
 
+  async getNestedFolders(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+    const nestedFolders = [];
+
+    try {
+      await foldersService.getNestedFolders(id, nestedFolders);
+
+      res.send(nestedFolders);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
   async createFolder(req: Request, res: Response): Promise<any> {
     const name = req.body.name;
     const root = Boolean(req.body.root);

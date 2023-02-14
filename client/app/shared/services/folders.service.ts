@@ -31,6 +31,10 @@ export class FoldersService {
     return this.http.get('/api/folders', { params });
   }
 
+  getNestedFolders(id: number): Observable<any> {
+    return this.http.get(`/api/folders/${id}/nested`);
+  }
+
   createFolder(folder: Folder): Observable<any> {
     return this.http.post('/api/folders', folder);
   }
