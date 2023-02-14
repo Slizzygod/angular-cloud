@@ -177,8 +177,8 @@ $my-palette: mat.define-palette(mat.$indigo-palette);
   cursor: inherit !important;
 }
 
-.space-result {
-  width: 220px;
+.space-result, .upload-progress {
+  width: 240px;
   border: solid 1px mat.get-color-from-palette($my-palette, 500);
   border-radius: 1em;
   padding: 1em;

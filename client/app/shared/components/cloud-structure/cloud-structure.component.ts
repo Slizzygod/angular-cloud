@@ -1,7 +1,9 @@
+import { filter, map, tap } from 'rxjs/operators';
 import { saveAs } from 'file-saver';
 
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { HttpEventType } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DndDropEvent } from 'ngx-drag-drop';
@@ -44,6 +46,7 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
   selectedDocument: Document = null;
   nestedFolders: Folder[] = [];
   userStatistics: UserStatistics = null;
+  uploadProgress = 0;
   isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
@@ -292,10 +295,22 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
 
       formData.append("thumbnail", file);
 
-      this.documentsService.uploadDocument(formData, this.parent).subscribe({
-        next: (document: Document) => this.onUploadedDocument(document),
-        error: (error: unknown) => this.onError(error)
-      });
+      this.documentsService.uploadDocument(formData, this.parent)
+        .pipe(
+          tap((event: any) => {
+            if (event.type == HttpEventType.UploadProgress) {
+              this.uploadProgress = Math.round((100 / event.total) * event.loaded);
+            } else if (event.type == HttpEventType.Response) {
+              this.uploadProgress = 0;
+            }
+          }),
+          filter((event: any) => event.type == HttpEventType.Response && event.body),
+          map((event: any) => event.body)
+        )
+        .subscribe({
+          next: (document: Document) => this.onUploadedDocument(document),
+          error: (error: unknown) => this.onError(error)
+        });
     }
   }
 

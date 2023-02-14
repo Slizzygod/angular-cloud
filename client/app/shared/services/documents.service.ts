@@ -71,7 +71,7 @@ export class DocumentsService {
       params.folderId = folderId;
     }
 
-    return this.http.post(`/api/documents/upload`, document, { params });
+    return this.http.post(`/api/documents/upload`, document, { params, reportProgress: true, observe: 'events' });
   }
 
   downloadDocument(id: number): Observable<any> {
