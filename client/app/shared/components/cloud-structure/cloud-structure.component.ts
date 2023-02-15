@@ -310,7 +310,11 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
         )
         .subscribe({
           next: (document: Document) => this.onUploadedDocument(document),
-          error: (error: unknown) => this.onError(error)
+          error: (error: unknown) => {
+            this.uploadProgress = 0;
+
+            this.onError(error);
+          }
         });
     }
   }
