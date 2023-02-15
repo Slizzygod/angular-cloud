@@ -1,4 +1,5 @@
 import * as archiver from 'archiver';
+import * as fsPromises from 'fs/promises';
 
 import { Request, Response } from 'express';
 import { Folder, FolderUser } from '../../core/models';
@@ -147,19 +148,27 @@ export class FoldersCtrl {
   async downloadFolder(req: Request, res: Response): Promise<any> {
     const id = Number(req.params.id);
 
-    const user = usersService.getCurrentSessionUser(req);
-
     try {
       const folderPath = await foldersService.getFolderPath(id);
-      const folder = await foldersService.getFolder(id, user.id);
+      const folderFiles = await foldersService.getFolderFiles(folderPath, []);
+
+      let totalSize = 0
+
+      for (const file of folderFiles) {
+        const statistic = await fsPromises.stat(file);
+
+        totalSize += statistic.size;
+      }
 
       const archive = archiver('zip').directory(folderPath, false);
 
       res.setHeader("Content-Disposition", "attachment;");
+      res.set('Length', String(totalSize));
       res.set('Content-Type', 'application/zip');
       archive.pipe(res);
       archive.finalize();
     } catch (error) {
+      console.log(error);
       res.status(500).send(error.message);
     }
   }

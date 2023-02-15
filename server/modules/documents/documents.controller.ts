@@ -205,10 +205,13 @@ export class DocumentsCtrl {
     try {
       const document = await documentsService.getDocument(id, user.id);
       const folderPath = await foldersService.getFolderPath(document.folderId, document.ownerUser.username);
+      const documentPath = `${folderPath}/${document.name}.${document.extension}`;
 
-      const rs = fs.createReadStream(`${folderPath}/${document.name}.${document.extension}`);
+      const documentStats = await fsPromises.stat(documentPath);
+      const rs = fs.createReadStream(documentPath);
 
       res.setHeader("Content-Disposition", "attachment;");
+      res.set('Length', String(documentStats.size));
       res.set('Content-Type', mime.lookup(document.extension));
 
       rs.pipe(res);

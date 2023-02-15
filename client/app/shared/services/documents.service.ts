@@ -75,7 +75,7 @@ export class DocumentsService {
   }
 
   downloadDocument(id: number): Observable<any> {
-    return this.http.get(`/api/documents/${id}/download`, { responseType: 'blob' });
+    return this.http.get(`/api/documents/${id}/download`, { reportProgress: true, observe: 'events', responseType: 'blob' });
   }
 
   moveDocument(id: number, destFolderId: number): Observable<any> {

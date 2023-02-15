@@ -60,7 +60,7 @@ export class FoldersService {
   }
 
   downloadFolder(id: number): Observable<any> {
-    return this.http.get(`/api/folders/${id}/download`, { responseType: 'blob' });
+    return this.http.get(`/api/folders/${id}/download`, { reportProgress: true, observe: 'events', responseType: 'blob' });
   }
 
   moveFolder(id: number, destFolderId: number): Observable<any> {

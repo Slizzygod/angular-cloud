@@ -165,7 +165,7 @@
   </div>
 </div>
 
-<div *ngIf="mode === 'personal' && userStatistics && !uploadProgress" class="space-result">
+<div *ngIf="mode === 'personal' && userStatistics && !uploadProgress && !downloadProgress" class="space-result">
   <span>Занято {{userStatistics.size}} из {{userStatistics.space}}ГБ</span>
   <mat-progress-bar color="primary" mode="determinate" [value]="userStatistics.result"></mat-progress-bar>
 </div>
@@ -173,4 +173,9 @@
 <div class="upload-progress" *ngIf="uploadProgress">
   <span>Идет загрузка {{uploadProgress}}%</span>
   <mat-progress-bar color="primary" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+</div>
+
+<div class="download-progress" *ngIf="downloadProgress">
+  <span>Идет скачивание {{downloadProgress}}%</span>
+  <mat-progress-bar color="primary" mode="determinate" [value]="downloadProgress"></mat-progress-bar>
 </div>

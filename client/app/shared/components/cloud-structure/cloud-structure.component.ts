@@ -21,6 +21,7 @@ import { CLOUD_STRUCTURE_DROP_EVENTS_TYPES, CLOUD_STRUCTURE_MODES } from './clou
  * переделать favourite = true на моды
  * моды для cloud-structure вынести в константы
  * покрыть правами методы на бэке
+ * у файла не может быть расширения?
  */
 
 import {
@@ -48,6 +49,7 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
   nestedFolders: Folder[] = [];
   userStatistics: UserStatistics = null;
   uploadProgress = 0;
+  downloadProgress = 0;
   isHover = false;
 
   getFolderIcon = getMaterialFolderIcon;
@@ -330,10 +332,30 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
   onClickDownloadFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
 
-    this.foldersService.downloadFolder(folder.id).subscribe({
-      next: (data: Blob) => this.onDownloadedFolder(data, folder),
-      error: (error: unknown) => this.onError(error)
-    });
+    let total = 0;
+
+    this.foldersService.downloadFolder(folder.id)
+      .pipe(
+        tap((event: any) => {
+          switch (event.type) {
+            case HttpEventType.ResponseHeader:
+              total = Number(event.headers.get('Length'));
+              break;
+            case HttpEventType.DownloadProgress:
+              this.downloadProgress = Math.round((100 / total) * event.loaded);
+              break;
+            case HttpEventType.Response:
+              this.downloadProgress = 0
+              break;
+          }
+        }),
+        filter((event: any) => event.type == HttpEventType.Response && event.body),
+        map((event: any) => event.body)
+      )
+      .subscribe({
+        next: (data: Blob) => this.onDownloadedFolder(data, folder),
+        error: (error: unknown) => this.onError(error)
+      });
   }
 
   onDownloadedFolder(data: Blob, folder: Folder): void {
@@ -344,10 +366,30 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
   onClickDownloadDocument(event: Event, document: Document): void {
     event.stopPropagation();
 
-    this.documentsService.downloadDocument(document.id).subscribe({
-      next: (data: Blob) => this.onDownloadedDocument(data, document),
-      error: (error: unknown) => this.onError(error)
-    });
+    let total = 0;
+
+    this.documentsService.downloadDocument(document.id)
+      .pipe(
+        tap((event: any) => {
+          switch (event.type) {
+            case HttpEventType.ResponseHeader:
+              total = Number(event.headers.get('Length'));
+              break;
+            case HttpEventType.DownloadProgress:
+              this.downloadProgress = Math.round((100 / total) * event.loaded);
+              break;
+            case HttpEventType.Response:
+              this.downloadProgress = 0
+              break;
+          }
+        }),
+        filter((event: any) => event.type == HttpEventType.Response && event.body),
+        map((event: any) => event.body)
+      )
+      .subscribe({
+        next: (data: Blob) => this.onDownloadedDocument(data, document),
+        error: (error: unknown) => this.onError(error)
+      });
   }
 
   onDownloadedDocument(data: Blob, document: Document): void {
