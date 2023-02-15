@@ -65,7 +65,7 @@ export class ShareComponent implements OnInit, OnDestroy {
   }
 
   onError(error: any) {
-    console.log(error);
+    console.error(error);
   }
 
   ngOnDestroy(): void {
