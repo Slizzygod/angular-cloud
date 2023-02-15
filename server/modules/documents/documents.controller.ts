@@ -4,7 +4,7 @@ import * as mime from 'mime-types';
 
 import { Request, Response } from 'express';
 
-import { DocumentUser } from '../../core/models';
+import { DocumentUser, Document } from '../../core/models';
 
 import { usersService } from '../users/users.service';
 import { documentsMapService, documentsService } from './services';
@@ -57,6 +57,31 @@ export class DocumentsCtrl {
       const folderPath = await foldersService.getFolderPath(document.folderId, document.ownerUser.username);
 
       await fsPromises.writeFile(`${folderPath}/${document.name}.${document.extension}`, text);
+
+      res.json({ id });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  async updateDocument(req: Request, res: Response): Promise<any> {
+    const id = Number(req.params.id);
+    const name = req.body.name;
+
+    const user = usersService.getCurrentSessionUser(req);
+
+    if (!name) {
+      return res.status(412).send('Document name is required');
+    }
+
+    try {
+      const documents = await Document.findAll({ where: { name } });
+
+      if (documents.length > 0) {
+        return res.status(400).send('Name must be unique');
+      }
+
+      await documentsService.updateDocument({ id, name, user });
 
       res.json({ id });
     } catch (error) {

@@ -79,6 +79,12 @@ export class FoldersCtrl {
     }
 
     try {
+      const folders = await Folder.findAll({ where: { name } });
+
+      if (folders.length > 0) {
+        return res.status(400).send('Name must be unique');
+      }
+
       await foldersService.updateFolder({ id, name, user });
 
       res.json({ id });

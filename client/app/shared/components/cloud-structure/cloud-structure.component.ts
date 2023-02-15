@@ -13,13 +13,14 @@ import { DocumentsService, FoldersService, utilsService } from '@app/shared/serv
 import { UsersService } from '@app/components/users/services';
 import { ShareComponent } from '../share/share.component';
 import { DocumentEditorComponent } from './../document-editor/document-editor.component';
+import { EntitySettingsComponent } from '../entity-settings/entity-settings.component';
 import { CLOUD_STRUCTURE_DROP_EVENTS_TYPES, CLOUD_STRUCTURE_MODES } from './cloud-structure.config';
 
 /**
+ * TODO:
  * переделать favourite = true на моды
  * моды для cloud-structure вынести в константы
  * покрыть правами методы на бэке
- * добавить изменение названия файлов и папок
  */
 
 import {
@@ -392,6 +393,84 @@ export class CloudStructureComponent implements OnInit, OnChanges, OnDestroy {
     this.folders = this.folders.filter((el: Folder) => el.id !== id);
 
     this.notificationService.success('Папка успешно перемещена');
+  }
+
+  onRightClickDocument(event: Event, document: Document): void {
+    event.preventDefault();
+
+    if (!document.owner) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(EntitySettingsComponent, {
+      data: { name: document.name },
+      width: '40vh',
+    });
+
+    this.subscriptions.add(
+      dialogRef.afterClosed().subscribe({
+        next: (data: any) => this.onUpdateDocument({ ...document, ...data }),
+        error: (error: unknown) => this.onError(error)
+      })
+    );
+  }
+
+  onUpdateDocument(document: Document): void {
+    if (document) {
+      this.documentsService.updateDocument(document).subscribe({
+        next: () => this.onUpdatedDocument(document),
+        error: (error: unknown) => this.onError(error)
+      })
+    }
+  }
+
+  onUpdatedDocument(document: Document): void {
+    const needlyDocument = this.documents.find((el: Folder) => el.id === document.id);
+
+    if (needlyDocument) {
+      needlyDocument.name = document.name;
+
+      this.notificationService.success('Документ успешно обновлен')
+    }
+  }
+
+  onRightClickFolder(event: Event, folder: Folder): void {
+    event.preventDefault();
+
+    if (!folder.owner) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(EntitySettingsComponent, {
+      data: { name: folder.name },
+      width: '40vh',
+    });
+
+    this.subscriptions.add(
+      dialogRef.afterClosed().subscribe({
+        next: (data: any) => this.onUpdateFolder({ ...folder, ...data }),
+        error: (error: unknown) => this.onError(error)
+      })
+    );
+  }
+
+  onUpdateFolder(folder: Folder): void {
+    if (folder) {
+      this.foldersService.updateFolder(folder).subscribe({
+        next: () => this.onUpdatedFolder(folder),
+        error: (error: unknown) => this.onError(error)
+      })
+    }
+  }
+
+  onUpdatedFolder(folder: Folder): void {
+    const needlyFolder = this.folders.find((el: Folder) => el.id === folder.id);
+
+    if (needlyFolder) {
+      needlyFolder.name = folder.name;
+
+      this.notificationService.success('Папка успешно обновлена обновлена')
+    }
   }
 
   onError(error: unknown): void {

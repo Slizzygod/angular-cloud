@@ -40,8 +40,7 @@ class FoldersService {
       folderUserCondition = {};
       folderCondition = { parentId };
     }
-    console.log(folderUserCondition)
-    console.log(folderCondition)
+
     return await Folder.findAll({
       where: folderCondition,
       include: [
@@ -154,14 +153,13 @@ class FoldersService {
       await Folder.update({ name }, { where: condition, returning: true })
     ]);
 
-    const folderDir = fs.existsSync(`${config.rootDir}/${name}`);
+    const folderPath = fsFinder
+      .from(`${config.rootDir}/${user.username}`)
+      .findDirectories(`${oldFolder.name}_${oldFolder.id}`)[0];
 
-    if (!folderDir) {
-      await fsPromises.rename(
-        `${config.rootDir}/${user.username}/${oldFolder.name}_${oldFolder.id}`,
-        `${config.rootDir}/${user.username}/${name}_${oldFolder.id}`
-      );
-    }
+    const needlyFolderPath = folderPath.replace(`${oldFolder.name}_${oldFolder.id}`, `${name}_${oldFolder.id}`);
+
+    await fsPromises.rename(folderPath, needlyFolderPath);
 
     await logsService.createLog({
       alias: 'updateFolder',

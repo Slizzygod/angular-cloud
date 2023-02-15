@@ -30,6 +30,7 @@
         (dndDrop)="onDropElement($event, folder)"
         (mouseover)="folder['isHover'] = true"
         (mouseout)="folder['isHover'] = false"
+        (contextmenu)="onRightClickFolder($event, folder)"
         *ngFor="let folder of folders"
       >
         <div
@@ -88,6 +89,7 @@
         [dndDisableIf]="disableActions"
         (mouseover)="document['isHover'] = true"
         (mouseout)="document['isHover'] = false"
+        (contextmenu)="onRightClickDocument($event, document)"
         *ngFor="let document of documents"
       >
         <div

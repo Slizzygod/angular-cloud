@@ -1,12 +1,15 @@
 import * as fsPromises from 'fs/promises';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as fsFinder from 'fs-finder';
 
 import { Op } from 'sequelize';
 
 import { logsService } from '../../logs/logs.service';
 import { documentsMapService } from "./documents-map.service";
 import { foldersService } from '../../folders/services';
+
+import { config } from '../../../core/config/config';
 
 import { DocumentUser, Document, User, DocumentsOptions } from "../../../core/models";
 
@@ -158,6 +161,33 @@ class DocumentsService {
       fsPromises.rename(`${folderPath}/${documentPath}`, `${destFolderPath}/${documentPath}`),
       Document.update({ root: false, folderId: destFolderId }, { where: { id } })
     ]);
+  }
+
+  async updateDocument(data: DocumentsOptions): Promise<any> {
+    const { id, name, user } = data;
+
+    const [ oldDocument, result ] = await Promise.all([
+      await Document.findOne({ where: { id } }),
+      await Document.update({ name }, { where: { id }, returning: true })
+    ]);
+
+    const documentPath = fsFinder
+      .from(`${config.rootDir}/${user.username}`)
+      .findFiles(`${oldDocument.name}.${oldDocument.extension}`)[0];
+
+    const documentFolderPath = documentPath.replace(`${oldDocument.name}.${oldDocument.extension}`, `${name}.${oldDocument.extension}`);
+
+    await fsPromises.rename(documentPath, documentFolderPath);
+
+    await logsService.createLog({
+      alias: 'updateDocument',
+      method: 'PUT',
+      data: { name },
+      user,
+      folder: result[1][0],
+    });
+
+    return result[1][0].id;
   }
 
 }

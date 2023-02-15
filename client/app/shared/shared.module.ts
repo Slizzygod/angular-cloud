@@ -30,7 +30,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DndModule } from 'ngx-drag-drop';
 import { QuillModule } from 'ngx-quill';
 
-import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from './components';
+import { CloudStructureComponent, DocumentEditorComponent, ShareComponent, EntitySettingsComponent } from './components';
 
 @NgModule({
   imports: [
@@ -69,7 +69,8 @@ import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from
   declarations: [
     CloudStructureComponent,
     DocumentEditorComponent,
-    ShareComponent
+    ShareComponent,
+    EntitySettingsComponent
   ],
   exports: [
     CommonModule,
@@ -102,6 +103,7 @@ import { CloudStructureComponent, DocumentEditorComponent, ShareComponent } from
     MatProgressBarModule,
     CloudStructureComponent,
     DocumentEditorComponent,
+    EntitySettingsComponent,
     ShareComponent,
     DndModule,
     QuillModule
