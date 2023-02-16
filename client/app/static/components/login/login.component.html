@@ -31,7 +31,11 @@
                     </mat-form-field>
                   </div>
                   <div class="row buttons d-flex justify-content-center pad pt-2">
-                    <button mat-raised-button [disabled]="loading$ | async" color="primary">
+                    <button
+                      mat-raised-button
+                      [disabled]="(loading$ | async) || form.invalid || !form.dirty"
+                      color="primary"
+                    >
                       <div class="button-login">
                         <span>
                           <mat-icon>
